@@ -1,0 +1,10 @@
+.Rproj.user
+.Rhistory
+.Rprofile
+.RData
+.Ruserdata
+*.Rproj
+
+data-raw
+_local
+archive

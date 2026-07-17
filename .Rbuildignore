@@ -1,0 +1,17 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^\.Rprofile$
+
+^\.github$
+^\.gitignore$
+
+^README\.Rmd$
+^LICENSE\.md$
+^cran-comments\.md$
+^pkgdown$
+^_pkgdown\.yml$
+
+^data-raw$
+^_local$
+^archive$
+^man-roxygen$

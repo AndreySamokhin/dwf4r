@@ -1,0 +1,27 @@
+Type: Package
+Package: dwf4r
+Title: Unofficial R Interface to the Digilent WaveForms SDK
+Version: 0.0.0.9001
+Authors@R: person("Andrey", "Samokhin",
+                  email = "andrey.s.samokhin@gmail.com",
+                  role = c("aut", "cre", "cph"),
+                  comment = c(ORCID = "0000-0003-0223-6087"))
+Description: An independently developed R interface to selected functions of the
+    Digilent WaveForms SDK and its DWF library. The current version supports
+    only a limited subset of the SDK, focused on signal generation and timing
+    control through the Analog Out and Digital Out instruments. The WaveForms
+    SDK must be installed separately.
+License: MIT + file LICENSE
+URL: <TODO>
+BugReports: <TODO>
+Encoding: UTF-8
+LazyData: true
+NeedsCompilation: yes
+SystemRequirements: Digilent WaveForms SDK (installed separately)
+Imports: 
+    Rcpp
+LinkingTo: Rcpp
+Suggests: 
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+RoxygenNote: 7.3.3
