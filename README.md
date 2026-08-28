@@ -59,3 +59,18 @@ remotes::install_github("<OWNER>/dwf4r")
 `Sys.setenv()` sets the variable for the current R session. For a persistent
 configuration, `DWF_SDK_PATH` can instead be defined in the user's `.Renviron`
 file or as a Windows environment variable before starting R.
+
+
+## Documentation
+
+The package reference manual and vignette are available online and, after
+installation, in the package *doc/* directory.
+
+* [Reference manual][dwf4r_manual]
+* ["Basic Analog Out Functionality" vignette][analog-out-basics_vignette]
+
+
+<!-- Links -->
+
+[dwf4r_manual]: <https://andreysamokhin.github.io/dwf4r/inst/doc/dwf4r_0.1.0.pdf>
+[analog-out-basics_vignette]: <https://andreysamokhin.github.io/dwf4r/inst/doc/analog-out-basics.html>
