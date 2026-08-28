@@ -53,7 +53,7 @@ For example:
 
 ```r
 Sys.setenv(DWF_SDK_PATH = "D:/Digilent/WaveFormsSDK")
-remotes::install_github("<OWNER>/dwf4r")
+remotes::install_github("andreysamokhin/dwf4r")
 ```
 
 `Sys.setenv()` sets the variable for the current R session. For a persistent
