@@ -1,3 +1,3 @@
 #' @useDynLib dwf4r, .registration = TRUE
-#' @importFrom Rcpp sourceCpp
+#' @importFrom Rcpp evalCpp
 NULL

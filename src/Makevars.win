@@ -1,0 +1,31 @@
+# Default root directory of the Digilent WaveForms SDK; the user may override
+# this through 'Sys.setenv(DWF_SDK_PATH = "...")'
+DWF_SDK_PATH ?= C:/Program Files/Digilent/WaveFormsSDK
+
+# Normalize Windows path separators and remove surrounding whitespace
+DWF_SDK_PATH := $(subst \,/,$(strip $(DWF_SDK_PATH)))
+
+DWF_INC := $(DWF_SDK_PATH)/inc
+DWF_LIB := $(DWF_SDK_PATH)/lib/x64
+
+DWF_HEADER_OK := $(shell test -f "$(DWF_INC)/dwf.h" && printf yes)
+ifeq ($(DWF_HEADER_OK),)
+DWF_HEADER_ERROR := \
+    WaveForms SDK header not found at "$(DWF_INC)/dwf.h". \
+    Install the SDK in the default location or set DWF_SDK_PATH \
+    before installation.
+$(error $(DWF_HEADER_ERROR))
+endif
+
+DWF_LIBDIR_OK := $(shell test -d "$(DWF_LIB)" && printf yes)
+ifeq ($(DWF_LIBDIR_OK),)
+DWF_LIBDIR_ERROR := \
+    WaveForms SDK library directory not found at "$(DWF_LIB)". \
+    Install the SDK in the default location or set DWF_SDK_PATH \
+    before installation.
+$(error $(DWF_LIBDIR_ERROR))
+endif
+
+PKG_CPPFLAGS += -I"$(DWF_INC)"
+PKG_LIBS += -L"$(DWF_LIB)" -ldwf
+

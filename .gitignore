@@ -3,8 +3,12 @@
 .Rprofile
 .RData
 .Ruserdata
+.Renviron
 *.Rproj
 
 data-raw
 _local
 archive
+
+/doc/
+/Meta/

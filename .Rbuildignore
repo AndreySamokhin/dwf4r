@@ -15,3 +15,7 @@
 ^_local$
 ^archive$
 ^man-roxygen$
+
+^doc$
+^Meta$
+^vignettes$

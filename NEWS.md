@@ -2,4 +2,5 @@
 
 ## dwf4r 0.1.0
 
-* The initial release.
+* Initial release providing limited access to Digilent WaveForms SDK
+  functionality, with a focus on Analog Out.
