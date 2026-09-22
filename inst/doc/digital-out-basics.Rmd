@@ -1,0 +1,887 @@
+---
+title: "Basic Digital Out Functionality"
+author: "Andrey Samokhin"
+date: "2026-09-22"
+output:
+  rmarkdown::html_vignette:
+    css: style.css
+vignette: >
+  %\VignetteIndexEntry{Basic Digital Out Functionality}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r knitr_setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.align = "center",
+  fig.height = 3.5,
+  fig.width = 5.5
+)
+```
+
+```{r session_setup, include = FALSE}
+library(dwf4r)
+package_info <- paste0("`dwf4r_", utils::packageVersion("dwf4r"), "`")
+```
+
+## Experimental setup
+
+The examples in this vignette were recorded using an Analog Discovery 2 NI
+Edition and a Rigol DHO804 digital oscilloscope.
+
+The examples and descriptions were checked against WaveForms SDK 3.25 and the
+WaveForms SDK Reference Manual revised March 4, 2026.
+
+### Pattern generator
+
+The examples were tested using a Digilent Analog Discovery 2 NI Edition.
+
+The device is opened with `OpenDevice()`, used throughout the vignette, and
+closed after the final example. Its information is shown below; the serial
+number has been masked because it is not relevant to reproducing the examples.
+
+When exactly one device is available, `OpenDevice()` selects it automatically;
+if several devices are connected, specify the required device by serial number.
+
+```{r open_device, eval = FALSE}
+device <- OpenDevice()
+
+print(device$info)
+
+#> $device_type
+#> [1] "Analog Discovery 2"
+#>
+#> $device_revision
+#> [1] 2051
+#>
+#> $device_name
+#> [1] "Analog Discovery 2 NI EditionSN:Discovery2NI"
+#>
+#> $user_name
+#> [1] "Discovery2NI"
+#>
+#> $serial_number
+#> [1] "SN:************"
+#>
+#> $config_count
+#> [1] 8
+```
+
+### Oscilloscope
+
+The waveforms shown in this vignette were measured using a Rigol DHO804
+oscilloscope. Up to four Digital Out channels were connected to four
+oscilloscope inputs, and the Analog Discovery ground terminal was connected to
+the corresponding oscilloscope grounds.
+
+For each example, the waveform was generated using the displayed R code, the
+oscilloscope settings were adjusted to show the relevant signal properties, and
+a screenshot was saved for inclusion in the vignette. The R code is not
+evaluated during vignette rendering because it requires connected hardware.
+
+## Generate a pulse waveform
+
+Among the available Digital Out signal-generation functions, `"pulse"` is one of
+the simplest and most generally useful. It produces a periodic digital signal
+that alternates between low and high output states.
+
+The signal-generation function is selected with `SetDigitalOutFunction()`. The
+WaveForms SDK refers to this setting as the Digital Out *type*, whereas `dwf4r`
+uses the term *function* to maintain consistent naming between Analog Out and
+Digital Out.
+
+Digital Out also supports several electrical output modes. In `"push_pull"`
+mode, the output actively drives both the low and high states. In `"open_drain"`
+mode, the output actively drives the low state and releases the output for the
+high state, whereas `"open_source"` mode actively drives the high state and
+releases the output for the low state. The `"three_state"` mode additionally
+permits a high-impedance output state. The modes supported by a particular
+channel depend on the device and can be queried with
+`GetDigitalOutOutputModes()`. Open-drain and open-source operation requires an
+appropriate external pull resistor; three-state output is available only with
+supported signal-generation functions. The examples in this vignette use
+`"push_pull"`, which directly produces the low and high voltage levels required
+for the demonstrated pulse waveforms.
+
+Unlike Analog Out, Digital Out pulse frequency and duty cycle are not specified
+directly. Instead, they are determined by three whole-number values: a clock
+divider and low and high counters. The divider reduces the Digital Out internal
+clock frequency and determines the duration of one counter step:
+
+$$
+t_{\mathrm{count}} = \frac{ \mathrm{divider} }{ f_{\mathrm{clock}} }.
+$$
+
+The low and high counters specify how many counter steps the output remains in
+the corresponding state. Consequently, the pulse frequency is
+
+$$
+f_{\mathrm{pulse}} =
+\frac{ f_{\mathrm{clock}} }
+{ \mathrm{divider} \cdot (N_{\mathrm{low}} + N_{\mathrm{high}}) },
+$$
+
+and the fraction of each period spent in the high state is
+
+$$
+D = \frac{ N_{\mathrm{high}} }{ N_{\mathrm{low}} + N_{\mathrm{high}} }.
+$$
+
+The following example uses these settings to generate a continuous 1 kHz pulse
+waveform with a 50% duty cycle on the first Digital Out channel.
+
+```{r generate_pulse, eval = FALSE}
+ResetDigitalOut(device)
+
+EnableDigitalOutChannel(device, channel = 0L)
+SetDigitalOutFunction(device, channel = 0L, func = "pulse")
+SetDigitalOutOutput(device, channel = 0L, output = "push_pull")
+
+frequency <- 1000
+n_counts <- 10L
+internal_clock <- GetDigitalOutInternalClockFrequency(device)
+divider <- round(internal_clock / (n_counts * frequency))
+SetDigitalOutDivider(device, channel = 0L, divider = divider)
+
+SetDigitalOutCounter(
+  device,
+  channel = 0L,
+  low_count = 5L,
+  high_count = 5L
+)
+
+StartDigitalOut(device)
+```
+
+The example begins with `ResetDigitalOut()` to restore the Digital Out
+instrument to its SDK defaults and provide a reproducible starting point. The
+first channel is then enabled and configured for push-pull pulse generation.
+After the timing parameters are set, `StartDigitalOut()` starts the configured
+Digital Out instrument.
+
+In this example, one pulse period consists of ten counter steps. The calculated
+divider makes these ten steps correspond to a frequency of 1 kHz. Five steps are
+assigned to each output state, producing a 50% duty cycle. According to the
+Analog Discovery 2 specification, its Digital I/O uses 3.3 V CMOS logic. The
+measured push-pull waveform shows the corresponding low and high logic levels
+(Figure 1).
+
+```{r}
+#| label: fig_pulse_waveform
+#| echo: false
+#| out.width: "100%"
+#| fig.cap: >
+#|   Figure 1. Oscilloscope trace of the generated 1 kHz pulse waveform with a
+#|   50% duty cycle on Digital Out channel 0.
+
+knitr::include_graphics(
+  "figures/digital-out-basics/pulse-waveform.png"
+)
+```
+
+## Modify a running waveform
+
+Digital Out parameters can also be changed while the instrument is running.
+Because automatic configuration is disabled by `dwf4r`, setting a parameter
+updates the pending configuration without immediately changing the generated
+signal. The updated configuration is applied when `StartDigitalOut()` is called,
+which starts or restarts the Digital Out instrument.
+
+The following code changes the pulse duty cycle from 50% to 20% while retaining
+the 1 kHz frequency.
+
+```{r modify_running_waveform, eval = FALSE}
+SetDigitalOutCounter(
+  device,
+  channel = 0L,
+  low_count = 8L,
+  high_count = 2L
+)
+StartDigitalOut(device)
+```
+
+Unlike Analog Out, Digital Out does not provide a separate operation equivalent
+to `ApplyAnalogOutSettings()`. Calling `StartDigitalOut()` therefore applies the
+pending configuration by restarting the instrument.
+
+Only the low and high counters are changed; the clock divider and other channel
+settings retain their previous values. The total number of counter steps remains
+ten, so the pulse frequency is unchanged. Eight steps are assigned to the low
+state and two to the high state, producing a 20% duty cycle (Figure 2).
+
+```{r}
+#| label: fig_pulse_waveform_20_percent
+#| echo: false
+#| out.width: "100%"
+#| fig.cap: >
+#|   Figure 2. Oscilloscope trace after changing the 1 kHz pulse waveform from
+#|   50% to 20% duty cycle. The pulse period remains unchanged.
+
+knitr::include_graphics(
+  "figures/digital-out-basics/pulse-waveform-20-percent.png"
+)
+```
+
+## Inspect and stop waveform generation
+
+The current state of the Digital Out instrument can be retrieved using
+`GetDigitalOutStatus()`. At this point, the instrument is generating the
+modified pulse waveform and is therefore in the `"running"` state.
+
+```{r get_digital_out_status, eval = FALSE}
+GetDigitalOutStatus(device)
+
+#> [1] "running"
+```
+
+Signal generation can be stopped using `StopDigitalOut()`. Stopping the
+instrument does not reset its configuration; the configured signals can be
+started again using `StartDigitalOut()`.
+
+```{r stop_digital_out, eval = FALSE}
+StopDigitalOut(device)
+GetDigitalOutStatus(device)
+
+#> [1] "ready"
+```
+
+The `"ready"` state confirms that the Digital Out instrument is no longer
+generating signals.
+
+## Generate a finite waveform burst
+
+Digital Out generation proceeds through several instrument states (Figure 3).
+The diagram is a simplified adaptation of the state model presented in the
+Digilent WaveForms SDK Reference Manual. Digital Out differs from Analog Out in
+that a single state machine controls all Digital Out channels.
+
+```{r}
+#| label: fig_digital_out_states
+#| echo: false
+#| fig.cap: >
+#|   Figure 3. Simplified Digital Out state diagram. Solid arrows show the
+#|   primary state sequence; dashed arrows show the repeat paths to
+#|   <code>&quot;armed&quot;</code> when repeat triggering is enabled and to
+#|   <code>&quot;wait&quot;</code> when it is disabled.
+
+local({
+  old_par <- par(c("mar", "xpd"))
+  on.exit(par(old_par), add = TRUE)
+  par(
+    mar = c(0.5, 0.5, 0.5, 0.5),
+    xpd = NA
+  )
+
+  state_x <- c(
+    "ready" = 1,
+    "armed" = 3,
+    "wait" = 5,
+    "done" = 1,
+    "repeat" = 3,
+    "running" = 5
+  )
+  state_y <- c(
+    "ready" = 1,
+    "armed" = 1,
+    "wait" = 1,
+    "done" = 0,
+    "repeat" = 0,
+    "running" = 0
+  )
+
+  box_width <- 1
+  box_height <- 0.5
+
+  plot.new()
+  plot.window(
+    xlim = c(0, 6),
+    ylim = c(-0.5, 1.5),
+    xaxs = "i",
+    yaxs = "i"
+  )
+
+  rect(
+    xleft = state_x - box_width / 2,
+    ybottom = state_y - box_height / 2,
+    xright = state_x + box_width / 2,
+    ytop = state_y + box_height / 2,
+    col = "gray95",
+    border = "gray30",
+    lwd = 1.5
+  )
+  
+  text(
+    x = state_x,
+    y = state_y,
+    labels = names(state_x)
+  )
+
+  arrows(
+    x0 = c(
+      state_x[["ready"]] + box_width / 2,
+      state_x[["armed"]] + box_width / 2,
+      state_x[["wait"]],
+      state_x[["running"]] - box_width / 2,
+      state_x[["repeat"]] - box_width / 2,
+      state_x[["repeat"]],
+      state_x[["repeat"]] + box_width / 2
+    ),
+    y0 = c(
+      state_y[["ready"]],
+      state_y[["armed"]],
+      state_y[["wait"]] - box_height / 2,
+      state_y[["running"]],
+      state_y[["repeat"]],
+      state_y[["repeat"]] + box_height / 2,
+      state_y[["repeat"]] + box_height / 2
+    ),
+    x1 = c(
+      state_x[["armed"]] - box_width / 2,
+      state_x[["wait"]] - box_width / 2,
+      state_x[["running"]],
+      state_x[["repeat"]] + box_width / 2,
+      state_x[["done"]] + box_width / 2,
+      state_x[["armed"]],
+      state_x[["wait"]] - box_width / 2
+      ),
+    y1 = c(
+      state_y[["armed"]],
+      state_y[["wait"]],
+      state_y[["running"]] + box_height / 2,
+      state_y[["repeat"]],
+      state_y[["done"]],
+      state_y[["armed"]] - box_height / 2,
+      state_y[["wait"]] - box_height / 2
+    ),
+    length = 0.08,
+    lty = c(rep("solid", 5L), rep("dashed", 2L))
+  )
+  
+  text(
+    x = c(
+      (state_x[["ready"]] + state_x[["armed"]]) / 2,
+      (state_x[["armed"]] + state_x[["wait"]]) / 2
+    ),
+    y = c(state_y[["ready"]], state_y[["armed"]]) + 0.1,
+    labels = c("start", "trigger")
+  )
+})
+```
+
+Before generation starts, the instrument is in the `"ready"` state. Starting
+Digital Out moves it through `"armed"` and then to `"wait"` under the default
+configuration used here. The instrument remains in `"wait"` for the configured
+wait time and then generates all enabled channels during the configured run
+time. If repetitions remain, the wait-run cycle begins again; otherwise, the
+instrument enters `"done"`.
+
+By default, the wait time is `0`, the run time is `0`, and the repeat count is
+`1L`. A run time of `0` requests continuous generation, so the repeat count is
+not reached. With a finite run time, the repeat count specifies how many
+wait-run cycles are performed; `0L` requests infinite repetition.
+
+The pulse waveform is generated continuously while the instrument is in the
+`"running"` state. A finite pulse burst is therefore produced by limiting the
+Digital Out run time. The following example sets the run time to generate three
+pulses.
+
+```{r generate_three_pulse_burst, eval = FALSE}
+SetDigitalOutRun(device, run_time = 3L / frequency)
+StartDigitalOut(device)
+```
+
+At 1 kHz, one pulse period is 1 ms, so the configured run time is 3 ms (Figure
+4). The repeat count remains at its default value of `1L`, and the run interval
+is therefore performed once.
+
+```{r}
+#| label: fig_three_pulse_burst
+#| echo: false
+#| out.width: "100%"
+#| fig.cap: >
+#|   Figure 4. Oscilloscope trace of a three-pulse, 1 kHz burst generated during
+#|   a single 3 ms run interval.
+
+knitr::include_graphics(
+  "figures/digital-out-basics/three-pulses.png"
+)
+```
+
+The progress of a sufficiently long run interval can be monitored using
+`GetDigitalOutRemainingRun()`. The following example starts a one-second run,
+waits for 0.1 seconds, and retrieves the remaining run value.
+
+```{r inspect_remaining_run, eval = FALSE}
+SetDigitalOutRun(device, run_time = 1)
+StartDigitalOut(device)
+Sys.sleep(0.1)
+
+remaining_run_value <- GetDigitalOutRemainingRun(device)
+remaining_run_value / GetDigitalOutInternalClockFrequency(device)
+
+#> [1] 0.8450741
+```
+
+The WaveForms SDK documentation does not specify the units returned by
+`FDwfDigitalOutRunStatus()`. On the Analog Discovery 2 used for this vignette,
+the returned value was consistently found to be expressed in Digital Out
+internal-clock ticks. Dividing it by the internal clock frequency therefore
+gives the remaining run time in seconds. This behavior has not been verified for
+other devices.
+
+The converted value is expected to be slightly below the theoretical value of
+0.9 seconds because the elapsed time also includes R execution, device
+communication, and the status query performed by `GetDigitalOutRemainingRun()`.
+This function is therefore most useful for monitoring relatively long run
+intervals rather than precise short-duration timing.
+
+Similarly, `GetDigitalOutRemainingRepeat()` retrieves the number of repeat
+cycles that have not yet been completed.
+
+```{r inspect_remaining_repeat, eval = FALSE}
+SetDigitalOutTiming(
+  device,
+  run_time = 1 / frequency,
+  repeat_count = 1000L
+)
+StartDigitalOut(device)
+Sys.sleep(0.1)
+
+GetDigitalOutRemainingRepeat(device)
+
+#> [1] 842
+```
+
+In the next example, each run interval lasts for one pulse period and is
+preceded by a wait interval lasting two periods. The wait-run cycle is performed
+four times.
+
+```{r generate_four_repeated_pulses, eval = FALSE}
+SetDigitalOutTiming(
+  device,
+  run_time = 1 / frequency,
+  wait_time = 2 / frequency,
+  repeat_count = 4L
+)
+StartDigitalOut(device)
+```
+
+With the default configuration restored by `ResetDigitalOut()`, repeated
+wait-run cycles proceed automatically. The output therefore consists of four
+single-pulse bursts, each preceded by a 2 ms wait interval (Figure 5).
+
+```{r}
+#| label: fig_four_repeated_pulses
+#| echo: false
+#| out.width: "100%"
+#| fig.cap: >
+#|   Figure 5. Oscilloscope trace of four repeated pulse bursts. Each 1 ms run
+#|   interval contains one pulse period and is preceded by a 2 ms wait interval.
+
+knitr::include_graphics(
+  "figures/digital-out-basics/four-pulses.png"
+)
+```
+
+## Generate a custom waveform
+
+A custom Digital Out waveform is specified as a vector containing logical low
+and high samples. Numeric patterns use `0` and `1`; character patterns can use
+`"l"` and `"h"`. This demonstration uses an eight-sample pattern (Figure 6).
+
+```{r define_custom_pattern}
+pattern <- c(0, 1, 0, 0, 1, 1, 1, 1)
+```
+
+```{r}
+#| label: fig_custom_pattern_profile
+#| echo: false
+#| fig.cap: >
+#|   Figure 6. Logical profile of the eight-sample custom Digital Out pattern.
+#|   Each element represents one interval at the configured sample rate.
+
+local({
+  old_par <- par(c("mar", "cex"))
+  on.exit(par(old_par), add = TRUE)
+
+  par(
+    mar = c(4.1, 4.1, 1.1, 1.1),
+    cex = 0.9
+  )
+
+  plot(
+    seq(from = 0, to = length(pattern), by = 1),
+    c(pattern, pattern[[length(pattern)]]),
+    type = "s",
+    xlab = "Sample interval",
+    ylab = "Logical level",
+    xaxs = "i",
+    yaxs = "i",
+    ylim = c(-0.1, 1.1),
+    lwd = 2,
+    yaxt = "n"
+  )
+  axis(2, at = c(0, 1), labels = c("low", "high"), las = 1)
+})
+```
+
+To generate a custom waveform, first select the `"custom"` signal-generation
+function and upload the desired pattern. Then set the `sample_rate`, which
+specifies how quickly individual pattern elements are generated. It can be
+viewed as the frequency applied to the individual points of the custom pattern:
+at a sample rate of 8 kHz, each pattern element lasts 0.125 ms. The sample rate
+therefore determines the timing of individual pattern elements, not the
+repetition frequency of the complete pattern.
+
+```{r generate_custom_waveform, eval = FALSE}
+sample_rate <- 8L * 1000
+
+SetDigitalOutFunction(device, channel = 0L, func = "custom")
+SetDigitalOutCustomPattern(
+  device,
+  channel = 0L,
+  pattern = pattern
+)
+SetDigitalOutCustomSampleRate(
+  device,
+  channel = 0L,
+  sample_rate = sample_rate
+)
+
+StartDigitalOut(device)
+```
+
+The preceding timing configuration remains active: each 1 ms custom pattern is
+preceded by a 2 ms wait interval, and the sequence is repeated four times
+(Figure 7).
+
+```{r}
+#| label: fig_custom_pattern
+#| echo: false
+#| out.width: "100%"
+#| fig.cap: >
+#|   Figure 7. Oscilloscope trace of four repetitions of the eight-sample
+#|   custom Digital Out pattern. At a sample rate of 8 kHz, each pattern lasts
+#|   1 ms and is preceded by a 2 ms wait interval.
+
+knitr::include_graphics(
+  "figures/digital-out-basics/custom-pattern.png"
+)
+```
+
+## Control idle output
+
+The idle mode controls a channel output while the Digital Out instrument is not
+in the `"running"` state, including the `"ready"`, `"wait"`, and `"done"`
+states. The available idle modes depend on the selected device and channel.
+
+The `"initial"` mode uses the configured initial output value. The `"low"` and
+`"high"` modes instead force a corresponding logical level while the instrument
+is idle. The `"three_state"` mode places the output in a high-impedance state
+and is not demonstrated here.
+
+The following code sets the first channel to the `"high"` idle mode and starts
+the same four-cycle custom-pattern sequence again (Figure 8).
+
+```{r use_high_idle_output, eval = FALSE}
+SetDigitalOutIdle(device, channel = 0L, idle = "high")
+StartDigitalOut(device)
+```
+
+```{r}
+#| label: fig_high_idle_output
+#| echo: false
+#| out.width: "100%"
+#| fig.cap: >
+#|   Figure 8. Custom Digital Out pattern generated with the
+#|   <code>&quot;high&quot;</code> idle mode. The output remains at the logical
+#|   high level during the wait intervals and after generation finishes.
+
+knitr::include_graphics(
+  "figures/digital-out-basics/custom-pattern-idle-high.png"
+)
+```
+
+## Inspect capabilities and configured values
+
+Digital Out capabilities depend on the connected device and its selected
+configuration. Before setting a parameter, `dwf4r` obtains the corresponding
+capability or supported range from the WaveForms SDK and checks the requested
+value against it.
+
+The same information can also be queried explicitly. For example, the supported
+divider range for a selected channel can be retrieved with:
+
+```{r inspect_divider_range, eval = FALSE}
+GetDigitalOutDividerRange(device, channel = 0L)
+
+#> [1] 1 2147483649
+```
+
+Currently configured values can be retrieved in a similar way. For example, the
+divider configured for the same channel can be inspected with:
+
+```{r inspect_divider, eval = FALSE}
+GetDigitalOutDivider(device, channel = 0L)
+
+#> [1] 12500
+```
+
+The following functions retrieve general Digital Out capabilities:
+
+* `GetDigitalOutChannelCount()`
+* `GetDigitalOutInternalClockFrequency()`
+* `GetDigitalOutRepeatRange()`
+* `GetDigitalOutRunRange()`
+* `GetDigitalOutWaitRange()`
+
+The following functions retrieve capabilities of a selected Digital Out channel:
+
+* `GetDigitalOutCounterRange()`
+* `GetDigitalOutDividerRange()`
+* `GetDigitalOutFunctionTypes()`
+* `GetDigitalOutIdleModes()`
+* `GetDigitalOutMaxDataBits()`
+* `GetDigitalOutOutputModes()`
+
+The current channel configuration can be inspected using:
+
+* `IsDigitalOutChannelEnabled()`
+* `GetDigitalOutCounter()`
+* `GetDigitalOutCustomSampleRate()`
+* `GetDigitalOutDivider()`
+* `GetDigitalOutFunction()`
+* `GetDigitalOutIdle()`
+* `GetDigitalOutInitialCounter()`
+* `GetDigitalOutInitialDivider()`
+* `GetDigitalOutOutput()`
+
+The instrument-level Digital Out configuration can be inspected using:
+
+* `GetDigitalOutRepeat()`
+* `GetDigitalOutRun()`
+* `GetDigitalOutTiming()` (it retrieves the run time, wait time, and repeat
+  count together as a named list)
+* `GetDigitalOutWait()`
+
+The current Digital Out state and remaining timing values can be inspected
+using:
+
+* `GetDigitalOutStatus()`
+* `GetDigitalOutRemainingRepeat()`
+* `GetDigitalOutRemainingRun()`
+
+## Run multiple channels simultaneously
+
+Although Digital Out generation is started and stopped for the instrument as a
+whole, the waveform can be configured independently for each channel. In
+particular, the signal-generation function, divider, and counter values are
+channel-specific, and custom pattern data can also be defined separately for
+each channel. This makes it possible to generate substantially different signals
+simultaneously.
+
+The following example configures four channels: a 0.5 kHz pulse waveform on
+channel 0, two 1 kHz pulse waveforms with different duty cycles on channels 1
+and 2, and a custom pattern repeating at 2 kHz on channel 3. The channels use
+three different divider values, demonstrating that the divider is a
+channel-specific rather than an instrument-level setting.
+
+```{r configure_multiple_channels, eval = FALSE}
+ResetDigitalOut(device)
+
+internal_clock <- GetDigitalOutInternalClockFrequency(device)
+
+# Use 16 counter steps per period to support 1/8-period phase shifts while
+# keeping the initial divider distinct from the ordinary divider.
+pulse_counts <- 16L
+
+for (channel in seq.int(0L, 3L)) {
+  EnableDigitalOutChannel(device, channel = channel)
+  SetDigitalOutOutput(device, channel = channel, output = "push_pull")
+}
+
+# Channel 0: 0.5 kHz pulse waveform.
+frequency_500hz <- 500
+divider_500hz <- internal_clock / (pulse_counts * frequency_500hz)
+
+SetDigitalOutFunction(device, channel = 0L, func = "pulse")
+SetDigitalOutDivider(device, channel = 0L, divider = divider_500hz)
+SetDigitalOutCounter(
+  device,
+  channel = 0L,
+  low_count = (3 / 4) * pulse_counts,
+  high_count = (1 / 4) * pulse_counts
+)
+
+# Channels 1 and 2: 1 kHz pulse waveforms.
+frequency_1khz <- 1000
+divider_1khz <- internal_clock / (pulse_counts * frequency_1khz)
+
+SetDigitalOutFunction(device, channel = 1L, func = "pulse")
+SetDigitalOutDivider(device, channel = 1L, divider = divider_1khz)
+SetDigitalOutCounter(
+  device,
+  channel = 1L,
+  low_count = (3 / 4) * pulse_counts,
+  high_count = (1 / 4) * pulse_counts
+)
+
+SetDigitalOutFunction(device, channel = 2L, func = "pulse")
+SetDigitalOutDivider(device, channel = 2L, divider = divider_1khz)
+SetDigitalOutCounter(
+  device,
+  channel = 2L,
+  low_count = (1 / 4) * pulse_counts,
+  high_count = (3 / 4) * pulse_counts
+)
+
+# Channel 3: ten-element custom pattern repeating at 2 kHz.
+pattern <- c(0L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 0L, 0L)
+pattern_frequency <- 2000
+sample_rate <- length(pattern) * pattern_frequency
+divider_custom <- round(internal_clock / sample_rate)
+
+SetDigitalOutFunction(device, channel = 3L, func = "custom")
+SetDigitalOutCustomPattern(device, channel = 3L, pattern = pattern)
+SetDigitalOutDivider(device, channel = 3L, divider = divider_custom)
+
+StartDigitalOut(device)
+```
+
+The resulting oscilloscope traces are shown in Figure 9. Because all four
+signals are displayed on the same time scale, the twofold differences between
+the 0.5, 1, and 2 kHz repetition frequencies can be compared directly.
+
+```{r}
+#| label: fig_multiple_channels
+#| echo: false
+#| out.width: "100%"
+#| fig.cap: >
+#|   Figure 9. Oscilloscope traces of four simultaneously generated Digital Out
+#|   waveforms: 0.5 kHz and 1 kHz pulse waveforms on channels 0--2 and a custom
+#|   pattern repeating at 2 kHz on channel 3.
+
+knitr::include_graphics(
+  "figures/digital-out-basics/multiple-channels.png"
+)
+```
+
+## Fine-tune initial waveform timing
+
+Digital Out provides separate initial divider and counter settings for
+fine-tuning the beginning of waveform generation.
+
+By default, both the initial count and initial divider are zero. The WaveForms
+SDK manual does not explicitly define the meaning of these zero values; however,
+tests with the Analog Discovery 2 indicate that the corresponding initial timing
+values are not applied and the ordinary counter and divider settings take effect
+immediately.
+
+The `initial_state` argument of `SetDigitalOutInitialCounter()` determines
+whether a channel starts in the low or high state. With `initial_count = 0`, the
+ordinary counter corresponding to the selected state is used immediately; this
+behavior is consistent with Digilent's phase examples and was observed with the
+Analog Discovery 2 used here. If `initial_count` is greater than zero, it
+replaces the corresponding ordinary counter value for the first output-state
+interval. After the initial counter expires, the ordinary low/high counter
+sequence begins.
+
+Independently of the initial counter, the initial divider configured with
+`SetDigitalOutInitialDivider()` is applied to the first counter step after the
+instrument enters the Running state. After this first divider interval expires,
+the ordinary divider configured with `SetDigitalOutDivider()` is used for all
+subsequent counter steps.
+
+Together, these settings provide additional control over the initial timing of
+individual Digital Out channels without changing their ordinary repeating
+waveforms. One particularly useful application is controlling the relative phase
+of signals generated on different channels. The following example uses the
+previously configured pulse waveforms to demonstrate this functionality. The 1
+kHz waveforms on channels 1 and 2 are given opposite phase shifts of one eighth
+of their period so that their pulse centers coincide. The 0.5 kHz waveform on
+channel 0 is left unchanged, so every second pair of 1 kHz pulses is also
+centered with the pulse on channel 0.
+
+There are two convenient ways to adjust the relative phase of Digital Out
+waveforms. The first is to change the initial counter while leaving the initial
+divider as its default value. In this case, the phase shift is
+specified as a whole number of ordinary counter steps. This approach is used in
+the Digital Out phase examples provided by Digilent for the C++ API. In the
+following example, it is used to shift the waveform on channel 1.
+
+An alternative is to combine the initial counter and initial divider settings.
+The initial counter can be increased by one count, while the initial divider
+sets the duration of the first counter step. The remaining initial counts use
+the ordinary divider, so the additional duration of the first output-state
+interval is determined by the initial divider. This approach can provide finer
+timing than an ordinary counter step. However, an exact phase shift can be
+obtained only when the required initial divider is a supported whole-number
+value; otherwise, the divider must be rounded and the resulting shift is only
+approximate. This approach is used below for channel 2.
+
+```{r adjust_initial_timing, eval = FALSE}
+
+# Channel 1: delay by 7/8 period, equivalent to a 1/8-period phase advance.
+counters_ch1 <- GetDigitalOutCounter(device, channel = 1L)
+SetDigitalOutInitialCounter(
+  device,
+  channel = 1L,
+  initial_state = "low",
+  initial_count = counters_ch1[["low_count"]] + (7 / 8) * pulse_counts
+)
+
+# Channel 2: delay by 1/8 period.
+counters_ch2 <- GetDigitalOutCounter(device, channel = 2L)
+period_ticks <- internal_clock / frequency_1khz
+SetDigitalOutInitialDivider(
+  device,
+  channel = 2L,
+  initial_divider = (1 / 8) * period_ticks
+)
+SetDigitalOutInitialCounter(
+  device,
+  channel = 2L,
+  initial_state = "low",
+  initial_count = counters_ch2[["low_count"]] + 1L
+)
+
+StartDigitalOut(device)
+```
+
+The resulting oscilloscope traces are shown in Figure 10. After the initial
+timing adjustment, the centers of the two 1 kHz pulses coincide, and every
+second pair is also centered with the 0.5 kHz pulse on channel 0.
+
+```{r}
+#| label: fig_shifted_waveforms
+#| echo: false
+#| out.width: "100%"
+#| fig.cap: >
+#|   Figure 10. Oscilloscope traces after adjusting the initial timing of
+#|   channels 1 and 2. The two 1 kHz waveforms have opposite one-eighth-period
+#|   phase shifts so that their pulse centers coincide; every second pair is
+#|   also centered with the 0.5 kHz waveform on channel 0.
+
+knitr::include_graphics(
+  "figures/digital-out-basics/shifted-waveforms.png"
+)
+```
+
+## Stop generation and close the device
+
+At the end of the session, Digital Out generation is stopped and the device
+handle is closed. `StopDigitalOut()` stops all Digital Out channels controlled
+by the shared instrument state machine. `CloseDevice()` then releases the device
+and discards its current configuration.
+
+```{r close_device, eval = FALSE}
+StopDigitalOut(device)
+CloseDevice(device)
+```
+
+
+---
+
+Built with `r package_info`.
