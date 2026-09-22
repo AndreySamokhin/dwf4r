@@ -73,6 +73,6 @@ installation, in the package *doc/* directory.
 
 <!-- Links -->
 
-[dwf4r_manual]: <https://andreysamokhin.github.io/dwf4r/inst/doc/dwf4r_0.1.0.pdf>
+[dwf4r_manual]: <https://andreysamokhin.github.io/dwf4r/inst/doc/dwf4r_0.2.0.pdf>
 [analog-out-basics_vignette]: <https://andreysamokhin.github.io/dwf4r/inst/doc/analog-out-basics.html>
 [digital-out-basics_vignette]: <https://andreysamokhin.github.io/dwf4r/inst/doc/digital-out-basics.html>
