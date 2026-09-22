@@ -68,9 +68,11 @@ installation, in the package *doc/* directory.
 
 * [Reference manual][dwf4r_manual]
 * ["Basic Analog Out Functionality" vignette][analog-out-basics_vignette]
+* ["Basic Digital Out Functionality" vignette][digital-out-basics_vignette]
 
 
 <!-- Links -->
 
 [dwf4r_manual]: <https://andreysamokhin.github.io/dwf4r/inst/doc/dwf4r_0.1.0.pdf>
 [analog-out-basics_vignette]: <https://andreysamokhin.github.io/dwf4r/inst/doc/analog-out-basics.html>
+[digital-out-basics_vignette]: <https://andreysamokhin.github.io/dwf4r/inst/doc/digital-out-basics.html>
