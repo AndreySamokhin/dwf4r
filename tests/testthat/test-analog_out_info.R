@@ -111,6 +111,31 @@ test_that("Analog Out information queries", {
 })
 
 
+test_that("Analog Out information queries, SDK failure", {
+  the_env <- getFromNamespace("the", "dwf4r")
+  old_devices <- the_env$devices
+  on.exit(the_env$devices <- old_devices, add = TRUE)
+
+  device <- .MakeDeviceObject()
+  the_env$devices <- list(list(device_handle = 123L))
+
+  local_mocked_bindings(
+    .QueryAnalogOutChannelCountC = function(handle) {
+      return(2L)
+    },
+    .QueryAnalogOutRunRangeC = function(handle, channel) {
+      stop("DWF run range error.", call. = FALSE)
+    },
+    .package = "dwf4r"
+  )
+
+  expect_error(
+    GetAnalogOutRunRange(device, 0L),
+    "DWF run range error"
+  )
+})
+
+
 
 #==[ Hardware tests ]===========================================================
 

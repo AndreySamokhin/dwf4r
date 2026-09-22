@@ -28,6 +28,12 @@ package_info <- paste0("`dwf4r_", utils::packageVersion("dwf4r"), "`")
 
 ## Experimental setup
 
+The examples in this vignette were recorded using an Analog Discovery 2 NI
+Edition and a Rigol DHO804 digital oscilloscope.
+
+The examples and descriptions were checked against WaveForms SDK 3.25 and the
+WaveForms SDK Reference Manual revised March 4, 2026.
+
 ### Signal generator
 
 The examples were tested using a Digilent Analog Discovery 2 NI Edition.
@@ -337,7 +343,7 @@ single four-cycle sine burst.
 frequency <- 4000
 
 SetCarrierFrequency(device, channel = 0L, frequency = frequency)
-SetAnalogOutRun(device, channel = 0L, run_time = 4 / frequency)
+SetAnalogOutRun(device, channel = 0L, run_time = 4L / frequency)
 StartAnalogOut(device, channel = 0L)
 ```
 
@@ -630,7 +636,6 @@ The following functions retrieve general Analog Out capabilities:
 * `GetAnalogOutRunRange()`
 * `GetAnalogOutWaitRange()`
 
-
 The following functions retrieve capabilities of a selected Analog Out node:
 
 * `GetAnalogOutNodeAmplitudeRange()`
@@ -656,11 +661,18 @@ The current carrier configuration can be inspected using:
 The channel-level Analog Out configuration can be inspected using:
 
 * `GetAnalogOutIdle()`
-* `GetAnalogOutRun()`
-* `GetAnalogOutWait()`
+* `GetAnalogOutMaster()`
 * `GetAnalogOutRepeat()`
+* `GetAnalogOutRun()`
 * `GetAnalogOutTiming()` (it retrieves the run time, wait time, and repeat count
   together as a named list)
+* `GetAnalogOutWait()`
+
+The current Analog Out state and remaining timing values can be inspected using:
+
+* `GetAnalogOutStatus()`
+* `GetAnalogOutRemainingRepeat()`
+* `GetAnalogOutRemainingRun()`
 
 ## Run two channels independently
 
@@ -769,9 +781,11 @@ channel follows the state machine of channel 0.
 
 ```{r inspect_analog_out_masters, eval = FALSE}
 GetAnalogOutMaster(device, channel = 0L)
+
 #> [1] 0
 
 GetAnalogOutMaster(device, channel = 1L)
+
 #> [1] 0
 ```
 

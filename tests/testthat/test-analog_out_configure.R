@@ -58,12 +58,12 @@ test_that("Analog Out: control and carrier configuration", {
       RegisterNewCall(call)
       return(invisible(NULL))
     },
-    .AnalogOutConfigureC = function(handle, channel, action) {
+    .AnalogOutConfigureC = function(handle, channel, action_code) {
       call <- list(
         call_type = "configure",
         handle = handle,
         channel = channel,
-        action = action
+        action_code = action_code
       )
       RegisterNewCall(call)
       return(invisible(NULL))
@@ -206,23 +206,23 @@ test_that("Analog Out: control and carrier configuration", {
   expect_null(ApplyAnalogOutSettings(device, channel = 1L))
   expect_identical(
     mock_state$last_call,
-    list(call_type = "configure", handle = 123L, channel = 1L, action = 3L)
+    list(call_type = "configure", handle = 123L, channel = 1L, action_code = 3L)
   )
 
   expect_null(StartAnalogOut(device, channel = 1L))
   expect_identical(
     mock_state$last_call,
-    list(call_type = "configure", handle = 123L, channel = 1L, action = 1L)
+    list(call_type = "configure", handle = 123L, channel = 1L, action_code = 1L)
   )
 
   expect_null(StopAnalogOut(device, channel = 1L))
   expect_identical(
     mock_state$last_call,
-    list(call_type = "configure", handle = 123L, channel = 1L, action = 0L)
+    list(call_type = "configure", handle = 123L, channel = 1L, action_code = 0L)
   )
 
   expect_error(
-    .ConfigureAnalogOut(device, channel = 0L, action = "invalid_action"),
+    .ConfigureAnalogOut(device, channel = 0L, action_code = "invalid_action"),
     'action' # "Assertion on 'action' failed"
   )
 
@@ -532,7 +532,7 @@ test_that("Analog Out: control and carrier configuration", {
     )
   )
 
-  # A channel can be its own master for independent operation.
+  # Self-master configuration, observed to provide independent operation.
   expect_null(
     SetAnalogOutMaster(
       device,
@@ -1644,7 +1644,7 @@ test_that("Analog Out: native-error propagation", {
     .QueryAnalogOutNodeFrequencyRangeC = function(handle, channel, node) {
       return(c(1, 1e6))
     },
-    .AnalogOutConfigureC = function(handle, channel, action) {
+    .AnalogOutConfigureC = function(handle, channel, action_code) {
       stop("DWF configuration error.", call. = FALSE)
     },
     .AnalogOutNodeFrequencySetC = function(handle, channel, node, value) {

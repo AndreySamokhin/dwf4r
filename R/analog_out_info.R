@@ -5,7 +5,7 @@
 #'   Retrieve Analog Out characteristics of a device.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #' @template arg_node
 #'
 #' @return

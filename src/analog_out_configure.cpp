@@ -72,17 +72,7 @@ std::string AnalogOutStatus(const int handle, const int channel) {
     ThrowDwfError("FDwfAnalogOutStatus");
   }
 
-  switch (state) {
-    case DwfStateReady: return "ready";
-    case DwfStateArmed: return "armed";
-    case DwfStateDone: return "done";
-    case DwfStateRunning: return "running";
-    case DwfStateConfig: return "config";
-    case DwfStatePrefill: return "prefill";
-    case DwfStateNotDone: return "not_done";
-    case DwfStateWait: return "wait";
-    default: return "unknown";
-  }
+  return ConvertDwfStateToName(state);
 }
 
 

@@ -26,10 +26,10 @@ A channel whose master differs from itself is controlled by the state
   machine of the master channel. Trigger, wait, run, and repeat settings
   therefore normally need to be configured only for the master channel.
 
-  Setting \code{master_channel} equal to \code{channel} appears consistent
-  with independent channel operation. Although this behavior is not
-  explicitly described in the WaveForms SDK reference manual, it was observed
-  experimentally with Analog Discovery 2.
+  Setting \code{master_channel} equal to \code{channel} appears to correspond
+  to independent channel operation. This behavior is not explicitly described
+  in the WaveForms SDK reference manual, but was observed experimentally with
+  Analog Discovery 2.
 
   This function updates the pending Analog Out configuration. Because
   automatic configuration is disabled by \pkg{dwf4r}, call

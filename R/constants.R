@@ -49,6 +49,34 @@
   ),
 
 
+  digital_out = list(
+
+    type_code = list(
+      pulse  = 0L,
+      custom = 1L,
+      random = 2L,
+      rom    = 3L,
+      state  = 4L,
+      play   = 5L
+    ),
+
+    output_code = list(
+      push_pull   = 0L,
+      open_drain  = 1L,
+      open_source = 2L,
+      three_state = 3L
+    ),
+
+    idle_code = list(
+      initial     = 0L,
+      low         = 1L,
+      high        = 2L,
+      three_state = 3L
+    )
+
+  ),
+
+
   trigger = list(
 
     # 'trigsrcDIO' is defined as 32 in 'dwf.h', but it is unclear how this value

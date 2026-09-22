@@ -30,3 +30,26 @@ test_that(".ConvertMaskToNames()", {
 })
 
 
+
+#==[ .ConvertUnsignedValues() ]=================================================
+
+test_that(".ConvertUnsignedValues()", {
+  expect_identical(
+    .ConvertUnsignedValues(c(0, 100)),
+    c(0L, 100L)
+  )
+  expect_identical(
+    .ConvertUnsignedValues(c(0, .Machine$integer.max)),
+    c(0L, .Machine$integer.max)
+  )
+  expect_identical(
+    .ConvertUnsignedValues(c(1, .Machine$integer.max + 1)),
+    c(1, .Machine$integer.max + 1)
+  )
+  expect_identical(
+    .ConvertUnsignedValues(.Machine$integer.max + 1),
+    .Machine$integer.max + 1
+  )
+})
+
+

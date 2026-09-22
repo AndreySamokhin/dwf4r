@@ -106,3 +106,124 @@
 }
 
 
+
+#==============================================================================#
+#' Check a device object for Digital Out use
+#'
+#' @description
+#'   The function does not validate relationships between \code{output},
+#'   \code{type}, and \code{idle}. A combination of individually supported
+#'   values is therefore not necessarily a valid Digital Out configuration.
+#'   Combination-specific constraints are not currently validated by
+#'   \pkg{dwf4r}; the WaveForms SDK may reject an incompatible configuration.
+#'
+#' @param device Object to check.
+#' @param channel (optional) Zero-based Digital Out channel index.
+#' @param output (optional) Digital Out output mode.
+#' @param func (optional) Digital Out func.
+#' @param idle (optional) Digital Out idle mode.
+#'
+#' @return Invisibly returns NULL.
+#'
+#' @importFrom checkmate assertInt
+#' @importFrom checkmate testChoice
+#'
+#' @noRd
+#==============================================================================#
+.AssertDigitalOut <- function(
+    device,
+    channel = NULL,
+    output = NULL,
+    func = NULL,
+    idle = NULL
+) {
+
+  # 'device'
+  .AssertDevice(device)
+
+  # 'channel'
+  if (!is.null(channel)) {
+    checkmate::assertInt(channel, lower = 0L)
+    n_channels <- .QueryDigitalOutChannelCountC(device$device_handle)
+    if (as.integer(channel) >= n_channels) {
+      stop_msg <- sprintf(
+        "'channel' is out of range; the device has %d Digital Out channel(s).",
+        n_channels
+      )
+      stop(stop_msg, call. = FALSE)
+    }
+  }
+
+  # 'output'
+  if (!is.null(output)) {
+    if (is.null(channel)) {
+      stop("'output' cannot be specified without 'channel'.", call. = FALSE)
+    }
+    output_mask <- .QueryDigitalOutOutputMaskC(
+      device$device_handle,
+      as.integer(channel)
+    )
+    supported_outputs <- .ConvertMaskToNames(
+      mask = output_mask,
+      code_map = .dwf_constants$digital_out$output_code
+    )
+    if (!checkmate::testChoice(output, supported_outputs)) {
+      stop_msg <- sprintf(
+        "Output mode '%s' is not supported for channel %d.",
+        output,
+        channel
+      )
+      stop(stop_msg, call. = FALSE)
+    }
+  }
+
+  # 'func'
+  if (!is.null(func)) {
+    if (is.null(channel)) {
+      stop("'func' cannot be specified without 'channel'.", call. = FALSE)
+    }
+    type_mask <- .QueryDigitalOutTypeMaskC(
+      device$device_handle,
+      as.integer(channel)
+    )
+    supported_types <- .ConvertMaskToNames(
+      mask = type_mask,
+      code_map = .dwf_constants$digital_out$type_code
+    )
+    if (!checkmate::testChoice(func, supported_types)) {
+      stop_msg <- sprintf(
+        "Function '%s' is not supported for channel %d.",
+        func,
+        channel
+      )
+      stop(stop_msg, call. = FALSE)
+    }
+  }
+
+  # 'idle'
+  if (!is.null(idle)) {
+    if (is.null(channel)) {
+      stop("'idle' cannot be specified without 'channel'.", call. = FALSE)
+    }
+    idle_mask <- .QueryDigitalOutIdleMaskC(
+      device$device_handle,
+      as.integer(channel)
+    )
+    supported_idle_modes <- .ConvertMaskToNames(
+      mask = idle_mask,
+      code_map = .dwf_constants$digital_out$idle_code
+    )
+    if (!checkmate::testChoice(idle, supported_idle_modes)) {
+      stop_msg <- sprintf(
+        "Idle mode '%s' is not supported for channel %d.",
+        idle,
+        channel
+      )
+      stop(stop_msg, call. = FALSE)
+    }
+  }
+
+  return(invisible(NULL))
+}
+
+

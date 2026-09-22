@@ -1,8 +1,8 @@
 # dwf4r
 
 `dwf4r` provides access to Digilent WaveForms hardware from R through the
-WaveForms SDK. The initial release focuses on Analog Out functionality,
-including waveform configuration, timing, and channel synchronization.
+WaveForms SDK. The package supports Analog Out and Digital Out functionality,
+including waveform configuration, timing, triggering, and channel control.
 
 
 ## Installation

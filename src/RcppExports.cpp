@@ -703,6 +703,526 @@ BEGIN_RCPP
     return R_NilValue;
 END_RCPP
 }
+// DigitalOutReset
+void DigitalOutReset(const int handle);
+RcppExport SEXP _dwf4r_DigitalOutReset(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    DigitalOutReset(handle);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutConfigure
+void DigitalOutConfigure(const int handle, const bool start);
+RcppExport SEXP _dwf4r_DigitalOutConfigure(SEXP handleSEXP, SEXP startSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const bool >::type start(startSEXP);
+    DigitalOutConfigure(handle, start);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutStatus
+std::string DigitalOutStatus(const int handle);
+RcppExport SEXP _dwf4r_DigitalOutStatus(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutStatus(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutEnableSet
+void DigitalOutEnableSet(const int handle, const int channel, const bool enable);
+RcppExport SEXP _dwf4r_DigitalOutEnableSet(SEXP handleSEXP, SEXP channelSEXP, SEXP enableSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    Rcpp::traits::input_parameter< const bool >::type enable(enableSEXP);
+    DigitalOutEnableSet(handle, channel, enable);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutEnableGet
+bool DigitalOutEnableGet(const int handle, const int channel);
+RcppExport SEXP _dwf4r_DigitalOutEnableGet(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutEnableGet(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutOutputSet
+void DigitalOutOutputSet(const int handle, const int channel, const int output_code);
+RcppExport SEXP _dwf4r_DigitalOutOutputSet(SEXP handleSEXP, SEXP channelSEXP, SEXP output_codeSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    Rcpp::traits::input_parameter< const int >::type output_code(output_codeSEXP);
+    DigitalOutOutputSet(handle, channel, output_code);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutOutputGet
+int DigitalOutOutputGet(const int handle, const int channel);
+RcppExport SEXP _dwf4r_DigitalOutOutputGet(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutOutputGet(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutTypeSet
+void DigitalOutTypeSet(const int handle, const int channel, const int type_code);
+RcppExport SEXP _dwf4r_DigitalOutTypeSet(SEXP handleSEXP, SEXP channelSEXP, SEXP type_codeSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    Rcpp::traits::input_parameter< const int >::type type_code(type_codeSEXP);
+    DigitalOutTypeSet(handle, channel, type_code);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutTypeGet
+int DigitalOutTypeGet(const int handle, const int channel);
+RcppExport SEXP _dwf4r_DigitalOutTypeGet(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutTypeGet(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutIdleSet
+void DigitalOutIdleSet(const int handle, const int channel, const int idle_code);
+RcppExport SEXP _dwf4r_DigitalOutIdleSet(SEXP handleSEXP, SEXP channelSEXP, SEXP idle_codeSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    Rcpp::traits::input_parameter< const int >::type idle_code(idle_codeSEXP);
+    DigitalOutIdleSet(handle, channel, idle_code);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutIdleGet
+int DigitalOutIdleGet(const int handle, const int channel);
+RcppExport SEXP _dwf4r_DigitalOutIdleGet(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutIdleGet(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutDividerSet
+void DigitalOutDividerSet(const int handle, const int channel, const double divider);
+RcppExport SEXP _dwf4r_DigitalOutDividerSet(SEXP handleSEXP, SEXP channelSEXP, SEXP dividerSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    Rcpp::traits::input_parameter< const double >::type divider(dividerSEXP);
+    DigitalOutDividerSet(handle, channel, divider);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutDividerGet
+double DigitalOutDividerGet(const int handle, const int channel);
+RcppExport SEXP _dwf4r_DigitalOutDividerGet(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutDividerGet(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutDividerInitSet
+void DigitalOutDividerInitSet(const int handle, const int channel, const double initial_divider);
+RcppExport SEXP _dwf4r_DigitalOutDividerInitSet(SEXP handleSEXP, SEXP channelSEXP, SEXP initial_dividerSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    Rcpp::traits::input_parameter< const double >::type initial_divider(initial_dividerSEXP);
+    DigitalOutDividerInitSet(handle, channel, initial_divider);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutDividerInitGet
+double DigitalOutDividerInitGet(const int handle, const int channel);
+RcppExport SEXP _dwf4r_DigitalOutDividerInitGet(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutDividerInitGet(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutCounterSet
+void DigitalOutCounterSet(const int handle, const int channel, const double low_count, const double high_count);
+RcppExport SEXP _dwf4r_DigitalOutCounterSet(SEXP handleSEXP, SEXP channelSEXP, SEXP low_countSEXP, SEXP high_countSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    Rcpp::traits::input_parameter< const double >::type low_count(low_countSEXP);
+    Rcpp::traits::input_parameter< const double >::type high_count(high_countSEXP);
+    DigitalOutCounterSet(handle, channel, low_count, high_count);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutCounterGet
+Rcpp::NumericVector DigitalOutCounterGet(const int handle, const int channel);
+RcppExport SEXP _dwf4r_DigitalOutCounterGet(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutCounterGet(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutCounterInitSet
+void DigitalOutCounterInitSet(const int handle, const int channel, const bool initial_high, const double initial_count);
+RcppExport SEXP _dwf4r_DigitalOutCounterInitSet(SEXP handleSEXP, SEXP channelSEXP, SEXP initial_highSEXP, SEXP initial_countSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    Rcpp::traits::input_parameter< const bool >::type initial_high(initial_highSEXP);
+    Rcpp::traits::input_parameter< const double >::type initial_count(initial_countSEXP);
+    DigitalOutCounterInitSet(handle, channel, initial_high, initial_count);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutCounterInitGet
+Rcpp::List DigitalOutCounterInitGet(const int handle, const int channel);
+RcppExport SEXP _dwf4r_DigitalOutCounterInitGet(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutCounterInitGet(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutDataSet
+void DigitalOutDataSet(const int handle, const int channel, Rcpp::RawVector data, const unsigned int n_bits);
+RcppExport SEXP _dwf4r_DigitalOutDataSet(SEXP handleSEXP, SEXP channelSEXP, SEXP dataSEXP, SEXP n_bitsSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    Rcpp::traits::input_parameter< Rcpp::RawVector >::type data(dataSEXP);
+    Rcpp::traits::input_parameter< const unsigned int >::type n_bits(n_bitsSEXP);
+    DigitalOutDataSet(handle, channel, data, n_bits);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutRunSet
+void DigitalOutRunSet(const int handle, const double time_s);
+RcppExport SEXP _dwf4r_DigitalOutRunSet(SEXP handleSEXP, SEXP time_sSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const double >::type time_s(time_sSEXP);
+    DigitalOutRunSet(handle, time_s);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutRunGet
+double DigitalOutRunGet(const int handle);
+RcppExport SEXP _dwf4r_DigitalOutRunGet(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutRunGet(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutRunStatus
+double DigitalOutRunStatus(const int handle);
+RcppExport SEXP _dwf4r_DigitalOutRunStatus(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutRunStatus(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutWaitSet
+void DigitalOutWaitSet(const int handle, const double time_s);
+RcppExport SEXP _dwf4r_DigitalOutWaitSet(SEXP handleSEXP, SEXP time_sSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const double >::type time_s(time_sSEXP);
+    DigitalOutWaitSet(handle, time_s);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutWaitGet
+double DigitalOutWaitGet(const int handle);
+RcppExport SEXP _dwf4r_DigitalOutWaitGet(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutWaitGet(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutRepeatSet
+void DigitalOutRepeatSet(const int handle, const double repeat_count);
+RcppExport SEXP _dwf4r_DigitalOutRepeatSet(SEXP handleSEXP, SEXP repeat_countSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const double >::type repeat_count(repeat_countSEXP);
+    DigitalOutRepeatSet(handle, repeat_count);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutRepeatGet
+double DigitalOutRepeatGet(const int handle);
+RcppExport SEXP _dwf4r_DigitalOutRepeatGet(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutRepeatGet(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutRepeatStatus
+double DigitalOutRepeatStatus(const int handle);
+RcppExport SEXP _dwf4r_DigitalOutRepeatStatus(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutRepeatStatus(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutTriggerSourceSet
+void DigitalOutTriggerSourceSet(const int handle, const int source_code);
+RcppExport SEXP _dwf4r_DigitalOutTriggerSourceSet(SEXP handleSEXP, SEXP source_codeSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type source_code(source_codeSEXP);
+    DigitalOutTriggerSourceSet(handle, source_code);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutTriggerSourceGet
+int DigitalOutTriggerSourceGet(const int handle);
+RcppExport SEXP _dwf4r_DigitalOutTriggerSourceGet(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutTriggerSourceGet(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutTriggerSlopeSet
+void DigitalOutTriggerSlopeSet(const int handle, const int slope_code);
+RcppExport SEXP _dwf4r_DigitalOutTriggerSlopeSet(SEXP handleSEXP, SEXP slope_codeSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type slope_code(slope_codeSEXP);
+    DigitalOutTriggerSlopeSet(handle, slope_code);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutTriggerSlopeGet
+int DigitalOutTriggerSlopeGet(const int handle);
+RcppExport SEXP _dwf4r_DigitalOutTriggerSlopeGet(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutTriggerSlopeGet(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// DigitalOutRepeatTriggerSet
+void DigitalOutRepeatTriggerSet(const int handle, const bool repeat_trigger);
+RcppExport SEXP _dwf4r_DigitalOutRepeatTriggerSet(SEXP handleSEXP, SEXP repeat_triggerSEXP) {
+BEGIN_RCPP
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const bool >::type repeat_trigger(repeat_triggerSEXP);
+    DigitalOutRepeatTriggerSet(handle, repeat_trigger);
+    return R_NilValue;
+END_RCPP
+}
+// DigitalOutRepeatTriggerGet
+bool DigitalOutRepeatTriggerGet(const int handle);
+RcppExport SEXP _dwf4r_DigitalOutRepeatTriggerGet(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(DigitalOutRepeatTriggerGet(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// QueryDigitalOutChannelCount
+int QueryDigitalOutChannelCount(const int handle);
+RcppExport SEXP _dwf4r_QueryDigitalOutChannelCount(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(QueryDigitalOutChannelCount(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// QueryDigitalOutInternalClockFrequency
+double QueryDigitalOutInternalClockFrequency(const int handle);
+RcppExport SEXP _dwf4r_QueryDigitalOutInternalClockFrequency(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(QueryDigitalOutInternalClockFrequency(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// QueryDigitalOutRunRange
+Rcpp::NumericVector QueryDigitalOutRunRange(const int handle);
+RcppExport SEXP _dwf4r_QueryDigitalOutRunRange(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(QueryDigitalOutRunRange(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// QueryDigitalOutWaitRange
+Rcpp::NumericVector QueryDigitalOutWaitRange(const int handle);
+RcppExport SEXP _dwf4r_QueryDigitalOutWaitRange(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(QueryDigitalOutWaitRange(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// QueryDigitalOutRepeatRange
+Rcpp::NumericVector QueryDigitalOutRepeatRange(const int handle);
+RcppExport SEXP _dwf4r_QueryDigitalOutRepeatRange(SEXP handleSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    rcpp_result_gen = Rcpp::wrap(QueryDigitalOutRepeatRange(handle));
+    return rcpp_result_gen;
+END_RCPP
+}
+// QueryDigitalOutOutputMask
+int QueryDigitalOutOutputMask(const int handle, const int channel);
+RcppExport SEXP _dwf4r_QueryDigitalOutOutputMask(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(QueryDigitalOutOutputMask(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// QueryDigitalOutTypeMask
+int QueryDigitalOutTypeMask(const int handle, const int channel);
+RcppExport SEXP _dwf4r_QueryDigitalOutTypeMask(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(QueryDigitalOutTypeMask(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// QueryDigitalOutIdleMask
+int QueryDigitalOutIdleMask(const int handle, const int channel);
+RcppExport SEXP _dwf4r_QueryDigitalOutIdleMask(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(QueryDigitalOutIdleMask(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// QueryDigitalOutDividerRange
+Rcpp::NumericVector QueryDigitalOutDividerRange(const int handle, const int channel);
+RcppExport SEXP _dwf4r_QueryDigitalOutDividerRange(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(QueryDigitalOutDividerRange(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// QueryDigitalOutCounterRange
+Rcpp::NumericVector QueryDigitalOutCounterRange(const int handle, const int channel);
+RcppExport SEXP _dwf4r_QueryDigitalOutCounterRange(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(QueryDigitalOutCounterRange(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
+// QueryDigitalOutMaxDataBits
+double QueryDigitalOutMaxDataBits(const int handle, const int channel);
+RcppExport SEXP _dwf4r_QueryDigitalOutMaxDataBits(SEXP handleSEXP, SEXP channelSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
+    Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
+    rcpp_result_gen = Rcpp::wrap(QueryDigitalOutMaxDataBits(handle, channel));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_dwf4r_AnalogOutReset", (DL_FUNC) &_dwf4r_AnalogOutReset, 2},
@@ -762,6 +1282,51 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dwf4r_QueryDeviceTriggerSourceMask", (DL_FUNC) &_dwf4r_QueryDeviceTriggerSourceMask, 1},
     {"_dwf4r_QueryDeviceTriggerSlopeMask", (DL_FUNC) &_dwf4r_QueryDeviceTriggerSlopeMask, 1},
     {"_dwf4r_DeviceTriggerPc", (DL_FUNC) &_dwf4r_DeviceTriggerPc, 1},
+    {"_dwf4r_DigitalOutReset", (DL_FUNC) &_dwf4r_DigitalOutReset, 1},
+    {"_dwf4r_DigitalOutConfigure", (DL_FUNC) &_dwf4r_DigitalOutConfigure, 2},
+    {"_dwf4r_DigitalOutStatus", (DL_FUNC) &_dwf4r_DigitalOutStatus, 1},
+    {"_dwf4r_DigitalOutEnableSet", (DL_FUNC) &_dwf4r_DigitalOutEnableSet, 3},
+    {"_dwf4r_DigitalOutEnableGet", (DL_FUNC) &_dwf4r_DigitalOutEnableGet, 2},
+    {"_dwf4r_DigitalOutOutputSet", (DL_FUNC) &_dwf4r_DigitalOutOutputSet, 3},
+    {"_dwf4r_DigitalOutOutputGet", (DL_FUNC) &_dwf4r_DigitalOutOutputGet, 2},
+    {"_dwf4r_DigitalOutTypeSet", (DL_FUNC) &_dwf4r_DigitalOutTypeSet, 3},
+    {"_dwf4r_DigitalOutTypeGet", (DL_FUNC) &_dwf4r_DigitalOutTypeGet, 2},
+    {"_dwf4r_DigitalOutIdleSet", (DL_FUNC) &_dwf4r_DigitalOutIdleSet, 3},
+    {"_dwf4r_DigitalOutIdleGet", (DL_FUNC) &_dwf4r_DigitalOutIdleGet, 2},
+    {"_dwf4r_DigitalOutDividerSet", (DL_FUNC) &_dwf4r_DigitalOutDividerSet, 3},
+    {"_dwf4r_DigitalOutDividerGet", (DL_FUNC) &_dwf4r_DigitalOutDividerGet, 2},
+    {"_dwf4r_DigitalOutDividerInitSet", (DL_FUNC) &_dwf4r_DigitalOutDividerInitSet, 3},
+    {"_dwf4r_DigitalOutDividerInitGet", (DL_FUNC) &_dwf4r_DigitalOutDividerInitGet, 2},
+    {"_dwf4r_DigitalOutCounterSet", (DL_FUNC) &_dwf4r_DigitalOutCounterSet, 4},
+    {"_dwf4r_DigitalOutCounterGet", (DL_FUNC) &_dwf4r_DigitalOutCounterGet, 2},
+    {"_dwf4r_DigitalOutCounterInitSet", (DL_FUNC) &_dwf4r_DigitalOutCounterInitSet, 4},
+    {"_dwf4r_DigitalOutCounterInitGet", (DL_FUNC) &_dwf4r_DigitalOutCounterInitGet, 2},
+    {"_dwf4r_DigitalOutDataSet", (DL_FUNC) &_dwf4r_DigitalOutDataSet, 4},
+    {"_dwf4r_DigitalOutRunSet", (DL_FUNC) &_dwf4r_DigitalOutRunSet, 2},
+    {"_dwf4r_DigitalOutRunGet", (DL_FUNC) &_dwf4r_DigitalOutRunGet, 1},
+    {"_dwf4r_DigitalOutRunStatus", (DL_FUNC) &_dwf4r_DigitalOutRunStatus, 1},
+    {"_dwf4r_DigitalOutWaitSet", (DL_FUNC) &_dwf4r_DigitalOutWaitSet, 2},
+    {"_dwf4r_DigitalOutWaitGet", (DL_FUNC) &_dwf4r_DigitalOutWaitGet, 1},
+    {"_dwf4r_DigitalOutRepeatSet", (DL_FUNC) &_dwf4r_DigitalOutRepeatSet, 2},
+    {"_dwf4r_DigitalOutRepeatGet", (DL_FUNC) &_dwf4r_DigitalOutRepeatGet, 1},
+    {"_dwf4r_DigitalOutRepeatStatus", (DL_FUNC) &_dwf4r_DigitalOutRepeatStatus, 1},
+    {"_dwf4r_DigitalOutTriggerSourceSet", (DL_FUNC) &_dwf4r_DigitalOutTriggerSourceSet, 2},
+    {"_dwf4r_DigitalOutTriggerSourceGet", (DL_FUNC) &_dwf4r_DigitalOutTriggerSourceGet, 1},
+    {"_dwf4r_DigitalOutTriggerSlopeSet", (DL_FUNC) &_dwf4r_DigitalOutTriggerSlopeSet, 2},
+    {"_dwf4r_DigitalOutTriggerSlopeGet", (DL_FUNC) &_dwf4r_DigitalOutTriggerSlopeGet, 1},
+    {"_dwf4r_DigitalOutRepeatTriggerSet", (DL_FUNC) &_dwf4r_DigitalOutRepeatTriggerSet, 2},
+    {"_dwf4r_DigitalOutRepeatTriggerGet", (DL_FUNC) &_dwf4r_DigitalOutRepeatTriggerGet, 1},
+    {"_dwf4r_QueryDigitalOutChannelCount", (DL_FUNC) &_dwf4r_QueryDigitalOutChannelCount, 1},
+    {"_dwf4r_QueryDigitalOutInternalClockFrequency", (DL_FUNC) &_dwf4r_QueryDigitalOutInternalClockFrequency, 1},
+    {"_dwf4r_QueryDigitalOutRunRange", (DL_FUNC) &_dwf4r_QueryDigitalOutRunRange, 1},
+    {"_dwf4r_QueryDigitalOutWaitRange", (DL_FUNC) &_dwf4r_QueryDigitalOutWaitRange, 1},
+    {"_dwf4r_QueryDigitalOutRepeatRange", (DL_FUNC) &_dwf4r_QueryDigitalOutRepeatRange, 1},
+    {"_dwf4r_QueryDigitalOutOutputMask", (DL_FUNC) &_dwf4r_QueryDigitalOutOutputMask, 2},
+    {"_dwf4r_QueryDigitalOutTypeMask", (DL_FUNC) &_dwf4r_QueryDigitalOutTypeMask, 2},
+    {"_dwf4r_QueryDigitalOutIdleMask", (DL_FUNC) &_dwf4r_QueryDigitalOutIdleMask, 2},
+    {"_dwf4r_QueryDigitalOutDividerRange", (DL_FUNC) &_dwf4r_QueryDigitalOutDividerRange, 2},
+    {"_dwf4r_QueryDigitalOutCounterRange", (DL_FUNC) &_dwf4r_QueryDigitalOutCounterRange, 2},
+    {"_dwf4r_QueryDigitalOutMaxDataBits", (DL_FUNC) &_dwf4r_QueryDigitalOutMaxDataBits, 2},
     {NULL, NULL, 0}
 };
 

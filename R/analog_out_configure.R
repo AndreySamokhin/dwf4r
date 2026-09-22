@@ -6,40 +6,6 @@
 
 
 #==============================================================================#
-#' Convert an Analog Out SDK code to a user-facing name
-#'
-#' @param code
-#'   An integer SDK code.
-#' @param code_map
-#'   A named list mapping user-facing names to SDK codes (e.g.,
-#'   \code{.dwf_constants$analog_out$function_code} or
-#'   \code{.dwf_constants$analog_out$idle_code}).
-#' @param value_type
-#'   A string describing the type of code for error reporting.
-#'
-#' @return
-#'   A string containing the corresponding user-facing name.
-#'
-#' @noRd
-#==============================================================================#
-.ConvertAnalogOutCodeToName <- function(code, code_map, value_type) {
-  code_values <- unlist(code_map, use.names = FALSE)
-  code_idx <- match(as.integer(code), code_values)
-  if (is.na(code_idx)) {
-    stop_msg <- sprintf(
-      "WaveForms SDK returned an unknown Analog Out %s code (%d).",
-      value_type,
-      as.integer(code)
-    )
-    stop(stop_msg, call. = FALSE)
-  }
-  code_names <- names(code_map)
-  return(code_names[[code_idx]])
-}
-
-
-
-#==============================================================================#
 #' Reset Analog Out channel
 #'
 #' @description
@@ -49,14 +15,14 @@
 #'   reset configuration to the device.
 #'
 #' @template arg_device
-#' @template arg_channel
-#'
-#' @return
-#'   Invisibly returns \code{NULL}.
+#' @template arg_analog_out_channel
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
 #'   Analog Out workflow.
+#'
+#' @return
+#'   Invisibly returns \code{NULL}.
 #'
 #' @export
 #==============================================================================#
@@ -112,10 +78,8 @@ ResetAnalogOut <- function(device, channel) {
 #'   channel. Applying settings sends updated configuration to the device
 #'   without changing the current channel state.
 #'
-#' @name ConfigureAnalogOut
-#'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
@@ -123,6 +87,8 @@ ResetAnalogOut <- function(device, channel) {
 #'
 #' @return
 #'   Invisibly returns \code{NULL}.
+#'
+#' @name ConfigureAnalogOut
 #==============================================================================#
 NULL
 
@@ -162,17 +128,17 @@ StopAnalogOut <- function(device, channel) {
 #'   Retrieve the current state of a selected Analog Out channel.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
+#'
+#' @seealso
+#'   See the vignette \emph{Basic Analog Out Functionality} for a complete
+#'   Analog Out workflow.
 #'
 #' @return
 #'   A string containing \code{"ready"}, \code{"armed"}, \code{"wait"},
 #'   \code{"running"}, \code{"done"}, \code{"config"}, \code{"prefill"}, or
 #'   \code{"not_done"}. The value \code{"unknown"} is returned for an
 #'   unrecognized SDK state.
-#'
-#' @seealso
-#'   See the vignette \emph{Basic Analog Out Functionality} for a complete
-#'   Analog Out workflow.
 #'
 #' @export
 #==============================================================================#
@@ -242,10 +208,8 @@ GetAnalogOutStatus <- function(device, channel) {
 #' @description
 #'   Enable or disable the carrier node for an Analog Out channel.
 #'
-#' @name CarrierEnableDisable
-#'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #'
 #' @details
 #'   These functions change the carrier node configuration. To apply the
@@ -257,6 +221,8 @@ GetAnalogOutStatus <- function(device, channel) {
 #'
 #' @return
 #'   Invisibly returns \code{NULL}.
+#'
+#' @name CarrierEnableDisable
 #==============================================================================#
 NULL
 
@@ -298,15 +264,15 @@ DisableCarrier <- function(device, channel) {
 #'   channel.
 #'
 #' @template arg_device
-#' @template arg_channel
-#'
-#' @return
-#'   A logical scalar, \code{TRUE} if the carrier node is enabled and
-#'   \code{FALSE} if it is disabled.
+#' @template arg_analog_out_channel
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
 #'   Analog Out workflow.
+#'
+#' @return
+#'   A logical scalar, \code{TRUE} if the carrier node is enabled and
+#'   \code{FALSE} if it is disabled.
 #'
 #' @export
 #==============================================================================#
@@ -491,7 +457,7 @@ IsCarrierEnabled <- function(device, channel) {
 #'   Set parameters of the carrier node for an Analog Out channel.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #' @template arg_func
 #' @template arg_frequency
 #' @template arg_amplitude
@@ -509,12 +475,12 @@ IsCarrierEnabled <- function(device, channel) {
 #'   device; use the corresponding \code{GetCarrier*()} function to retrieve the
 #'   actual value.
 #'
-#' @return
-#'   Invisibly returns \code{NULL}.
-#'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
 #'   Analog Out workflow.
+#'
+#' @return
+#'   Invisibly returns \code{NULL}.
 #'
 #' @name SetCarrier
 #==============================================================================#
@@ -743,10 +709,10 @@ SetCarrier <- function(
     channel = as.integer(channel),
     node = .dwf_constants$analog_out$node_code[[node]]
   )
-  return(.ConvertAnalogOutCodeToName(
+  return(.ConvertCodeToName(
     code = function_code,
     code_map = .dwf_constants$analog_out$function_code,
-    value_type = sprintf("%s function", node)
+    value_type = sprintf("Analog Out %s function", node)
   ))
 }
 
@@ -759,15 +725,15 @@ SetCarrier <- function(
 #'   of an Analog Out channel.
 #'
 #' @template arg_device
-#' @template arg_channel
-#'
-#' @return
-#'   A string identifying the configured waveform function. Possible values can
-#'   be queried with \code{GetAnalogOutNodeFunctionTypes()}.
+#' @template arg_analog_out_channel
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
 #'   Analog Out workflow.
+#'
+#' @return
+#'   A string identifying the configured waveform function. Possible values can
+#'   be queried with \code{GetAnalogOutNodeFunctionTypes()}.
 #'
 #' @export
 #==============================================================================#
@@ -848,7 +814,7 @@ GetCarrierFunction <- function(device, channel) {
 #'   an Analog Out channel.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #'
 #' @details
 #'   The functions return values reported by the corresponding WaveForms SDK
@@ -856,12 +822,12 @@ GetCarrierFunction <- function(device, channel) {
 #'   supplied to a setter if the SDK adjusted it to a value supported by the
 #'   device.
 #'
-#' @return
-#'   A numeric scalar containing the requested carrier parameter.
-#'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
 #'   Analog Out workflow.
+#'
+#' @return
+#'   A numeric scalar containing the requested carrier parameter.
 #'
 #' @name GetCarrierValues
 #==============================================================================#
@@ -950,7 +916,11 @@ GetCarrierPhase <- function(device, channel) {
 #'   channel.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
+#'
+#' @seealso
+#'   See the vignette \emph{Basic Analog Out Functionality} for a complete
+#'   Analog Out workflow.
 #'
 #' @return
 #'   A named list with the following elements:
@@ -978,10 +948,6 @@ GetCarrierPhase <- function(device, channel) {
 #'       Numeric carrier phase in degrees.
 #'     }
 #'   }
-#'
-#' @seealso
-#'   See the vignette \emph{Basic Analog Out Functionality} for a complete
-#'   Analog Out workflow.
 #'
 #' @export
 #==============================================================================#
@@ -1045,7 +1011,7 @@ GetCarrierSettings <- function(device, channel) {
 #' Upload custom Analog Out data
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #' @template arg_node
 #' @param data
 #'   A numeric vector of waveform samples normalized to the range
@@ -1108,17 +1074,17 @@ GetCarrierSettings <- function(device, channel) {
 #'   \code{StartAnalogOut()}.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #' @param data
 #'   A numeric vector of waveform samples normalized to the range
 #'   \code{[-1, 1]}.
 #'
-#' @return
-#'   Invisibly returns \code{NULL}.
-#'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
 #'   Analog Out workflow.
+#'
+#' @return
+#'   Invisibly returns \code{NULL}.
 #'
 #' @export
 #==============================================================================#
@@ -1144,7 +1110,7 @@ SetCarrierData <- function(device, channel, data) {
 #'   and \code{Wait} states.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #' @param idle
 #'   A string specifying the idle output mode. Supported values are
 #'   \code{"disable"}, \code{"offset"}, \code{"initial"}, and \code{"hold"}.
@@ -1155,12 +1121,12 @@ SetCarrierData <- function(device, channel, data) {
 #'   auto-configuration is disabled, call \code{ApplyAnalogOutSettings()} or
 #'   \code{StartAnalogOut()} after changing Analog Out settings.
 #'
-#' @return
-#'   Invisibly returns \code{NULL}.
-#'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
 #'   Analog Out workflow.
+#'
+#' @return
+#'   Invisibly returns \code{NULL}.
 #'
 #' @importFrom checkmate testChoice
 #'
@@ -1203,15 +1169,15 @@ SetAnalogOutIdle <- function(device, channel, idle) {
 #'   running, including the Ready, Stopped, Done, and Wait states.
 #'
 #' @template arg_device
-#' @template arg_channel
-#'
-#' @return
-#'   A string containing \code{"disable"}, \code{"offset"},
-#'   \code{"initial"}, or \code{"hold"}.
+#' @template arg_analog_out_channel
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
 #'   Analog Out workflow.
+#'
+#' @return
+#'   A string containing \code{"disable"}, \code{"offset"},
+#'   \code{"initial"}, or \code{"hold"}.
 #'
 #' @export
 #==============================================================================#
@@ -1221,10 +1187,10 @@ GetAnalogOutIdle <- function(device, channel) {
     handle = device$device_handle,
     channel = as.integer(channel)
   )
-  return(.ConvertAnalogOutCodeToName(
+  return(.ConvertCodeToName(
     code = idle_code,
     code_map = .dwf_constants$analog_out$idle_code,
-    value_type = "idle mode"
+    value_type = "Analog Out idle mode"
   ))
 }
 
@@ -1359,7 +1325,7 @@ GetAnalogOutIdle <- function(device, channel) {
 #'   Analog Out channel.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #' @param run_time
 #'   A numeric scalar specifying the run length in seconds. A value of
 #'   \code{0} requests continuous generation.
@@ -1384,12 +1350,12 @@ GetAnalogOutIdle <- function(device, channel) {
 #'   error occurs, parameters set before the error remain in the pending
 #'   configuration.
 #'
-#' @return
-#'   Invisibly returns \code{NULL}.
-#'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
 #'   Analog Out workflow.
+#'
+#' @return
+#'   Invisibly returns \code{NULL}.
 #'
 #' @name SetAnalogOutTiming
 #==============================================================================#
@@ -1575,7 +1541,7 @@ SetAnalogOutTiming <- function(
 #'   for a selected Analog Out channel.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #'
 #' @details
 #'   These functions retrieve the configured timing values reported by the
@@ -1583,6 +1549,10 @@ SetAnalogOutTiming <- function(
 #'   represents continuous generation, a wait time of \code{0} represents no
 #'   post-trigger delay, and a repeat count of \code{0} represents infinite
 #'   repetition.
+#'
+#' @seealso
+#'   See the vignette \emph{Basic Analog Out Functionality} for a complete
+#'   Analog Out workflow.
 #'
 #' @return
 #'   \code{GetAnalogOutRun()} and \code{GetAnalogOutWait()} return a numeric
@@ -1600,10 +1570,6 @@ SetAnalogOutTiming <- function(
 #'       Integer configured repeat count.
 #'     }
 #'   }
-#'
-#' @seealso
-#'   See the vignette \emph{Basic Analog Out Functionality} for a complete
-#'   Analog Out workflow.
 #'
 #' @name GetAnalogOutTiming
 #==============================================================================#
@@ -1776,7 +1742,7 @@ GetAnalogOutTiming <- function(device, channel) {
 #'   SDK does not provide a corresponding Analog Out wait-status function.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #' @param update
 #'   A logical scalar indicating whether the Analog Out status should be updated
 #'   before retrieving the remaining value. The default is \code{TRUE}. If
@@ -1799,14 +1765,14 @@ GetAnalogOutTiming <- function(device, channel) {
 #'   \code{GetAnalogOutStatus()}, then call both remaining-value functions with
 #'   \code{update = FALSE}.
 #'
+#' @seealso
+#'   See the vignette \emph{Basic Analog Out Functionality} for a complete
+#'   Analog Out workflow.
+#'
 #' @return
 #'   \code{GetAnalogOutRemainingRun()} returns a numeric scalar containing the
 #'   remaining run time in seconds. \code{GetAnalogOutRemainingRepeat()} returns
 #'   an integer scalar containing the remaining repeat count.
-#'
-#' @seealso
-#'   See the vignette \emph{Basic Analog Out Functionality} for a complete
-#'   Analog Out workflow.
 #'
 #' @name GetAnalogOutRemaining
 #==============================================================================#
@@ -1853,7 +1819,7 @@ GetAnalogOutRemainingRepeat <- function(device, channel, update = TRUE) {
 #'   Set the trigger source for a selected Analog Out channel.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #' @param source
 #'   A string specifying the trigger source. Recognized values include
 #'   \code{"none"}, \code{"pc"}, \code{"detector_analog_in"},
@@ -1913,7 +1879,7 @@ SetAnalogOutTriggerSource <- function(device, channel, source) {
 #'   channel.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #'
 #' @return
 #'   A string identifying the configured trigger source.
@@ -1928,10 +1894,10 @@ GetAnalogOutTriggerSource <- function(device, channel) {
     channel = as.integer(channel)
   )
 
-  return(.ConvertAnalogOutCodeToName(
+  return(.ConvertCodeToName(
     code = source_code,
     code_map = .dwf_constants$trigger$source_code,
-    value_type = "trigger source"
+    value_type = "Analog Out trigger source"
   ))
 }
 
@@ -1944,7 +1910,7 @@ GetAnalogOutTriggerSource <- function(device, channel) {
 #'   Set the trigger slope for a selected Analog Out channel.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #' @param slope
 #'   A string specifying the trigger slope. Recognized values are
 #'   \code{"rising"}, \code{"falling"}, and \code{"either"}.
@@ -1999,7 +1965,7 @@ SetAnalogOutTriggerSlope <- function(device, channel, slope) {
 #'   channel.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #'
 #' @return
 #'   A string identifying the configured trigger slope.
@@ -2014,10 +1980,10 @@ GetAnalogOutTriggerSlope <- function(device, channel) {
     channel = as.integer(channel)
   )
 
-  return(.ConvertAnalogOutCodeToName(
+  return(.ConvertCodeToName(
     code = slope_code,
     code_map = .dwf_constants$trigger$slope_code,
-    value_type = "trigger slope"
+    value_type = "Analog Out trigger slope"
   ))
 }
 
@@ -2031,7 +1997,7 @@ GetAnalogOutTriggerSlope <- function(device, channel) {
 #'   Analog Out channel.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #' @param repeat_trigger
 #'   A logical scalar. If \code{TRUE}, a new trigger is included in each
 #'   wait-run repeat cycle. If \code{FALSE}, repeated cycles proceed without
@@ -2088,7 +2054,7 @@ SetAnalogOutRepeatTrigger <- function(
 #'   selected Analog Out channel.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #'
 #' @return
 #'   A logical scalar. \code{TRUE} indicates that a new trigger is included in
@@ -2115,7 +2081,7 @@ GetAnalogOutRepeatTrigger <- function(device, channel) {
 #'   Set the state-machine master for a selected Analog Out channel.
 #'
 #' @template arg_device
-#' @template arg_channel
+#' @template arg_analog_out_channel
 #' @param master_channel
 #'   An integer scalar representing the zero-based Analog Out channel index to
 #'   use as the state-machine master.
@@ -2125,10 +2091,10 @@ GetAnalogOutRepeatTrigger <- function(device, channel) {
 #'   machine of the master channel. Trigger, wait, run, and repeat settings
 #'   therefore normally need to be configured only for the master channel.
 #'
-#'   Setting \code{master_channel} equal to \code{channel} appears consistent
-#'   with independent channel operation. Although this behavior is not
-#'   explicitly described in the WaveForms SDK reference manual, it was observed
-#'   experimentally with Analog Discovery 2.
+#'   Setting \code{master_channel} equal to \code{channel} appears to correspond
+#'   to independent channel operation. This behavior is not explicitly described
+#'   in the WaveForms SDK reference manual, but was observed experimentally with
+#'   Analog Discovery 2.
 #'
 #'   This function updates the pending Analog Out configuration. Because
 #'   automatic configuration is disabled by \pkg{dwf4r}, call
@@ -2138,12 +2104,12 @@ GetAnalogOutRepeatTrigger <- function(device, channel) {
 #'   When starting synchronized channels, initialize the slave channel before
 #'   starting the master channel.
 #'
-#' @return
-#'   Invisibly returns \code{NULL}.
-#'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
 #'   Analog Out workflow.
+#'
+#' @return
+#'   Invisibly returns \code{NULL}.
 #'
 #' @importFrom checkmate assertInt
 #'
@@ -2187,19 +2153,19 @@ SetAnalogOutMaster <- function(device, channel, master_channel) {
 #'   Analog Out channel.
 #'
 #' @template arg_device
-#' @template arg_channel
-#'
-#' @return
-#'   An integer scalar containing the zero-based index of the configured master
-#'   channel. If the returned index is equal to \code{channel}, the channel
-#'   reports itself as its state-machine master. On Analog Discovery 2, this was
-#'   observed experimentally to correspond to independent channel operation;
-#'   this behavior is not explicitly described in the WaveForms SDK reference
-#'   manual.
+#' @template arg_analog_out_channel
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
 #'   Analog Out workflow.
+#'
+#' @return
+#'   An integer scalar containing the zero-based index of the configured master
+#'   channel. If the returned index is equal to \code{channel}, the channel
+#'   reports itself as its state-machine master. On Analog Discovery 2, this
+#'   configuration was observed experimentally to correspond to independent
+#'   channel operation, although this behavior is not explicitly described in
+#'   the WaveForms SDK reference manual.
 #'
 #' @export
 #==============================================================================#

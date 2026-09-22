@@ -15,10 +15,10 @@ to a device connection that is still open.}
 \value{
 An integer scalar containing the zero-based index of the configured master
   channel. If the returned index is equal to \code{channel}, the channel
-  reports itself as its state-machine master. On Analog Discovery 2, this was
-  observed experimentally to correspond to independent channel operation;
-  this behavior is not explicitly described in the WaveForms SDK reference
-  manual.
+  reports itself as its state-machine master. On Analog Discovery 2, this
+  configuration was observed experimentally to correspond to independent
+  channel operation, although this behavior is not explicitly described in
+  the WaveForms SDK reference manual.
 }
 \description{
 Retrieve the state-machine master currently configured for a selected

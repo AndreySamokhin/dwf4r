@@ -1,7 +1,7 @@
 Type: Package
 Package: dwf4r
 Title: Unofficial R Interface to the Digilent WaveForms SDK
-Version: 0.1.0
+Version: 0.2.0
 Authors@R: person("Andrey", "Samokhin",
                   email = "andrey.s.samokhin@gmail.com",
                   role = c("aut", "cre", "cph"),

@@ -229,3 +229,183 @@
     invisible(.Call(`_dwf4r_DeviceTriggerPc`, handle))
 }
 
+.DigitalOutResetC <- function(handle) {
+    invisible(.Call(`_dwf4r_DigitalOutReset`, handle))
+}
+
+.DigitalOutConfigureC <- function(handle, start) {
+    invisible(.Call(`_dwf4r_DigitalOutConfigure`, handle, start))
+}
+
+.DigitalOutStatusC <- function(handle) {
+    .Call(`_dwf4r_DigitalOutStatus`, handle)
+}
+
+.DigitalOutEnableSetC <- function(handle, channel, enable) {
+    invisible(.Call(`_dwf4r_DigitalOutEnableSet`, handle, channel, enable))
+}
+
+.DigitalOutEnableGetC <- function(handle, channel) {
+    .Call(`_dwf4r_DigitalOutEnableGet`, handle, channel)
+}
+
+.DigitalOutOutputSetC <- function(handle, channel, output_code) {
+    invisible(.Call(`_dwf4r_DigitalOutOutputSet`, handle, channel, output_code))
+}
+
+.DigitalOutOutputGetC <- function(handle, channel) {
+    .Call(`_dwf4r_DigitalOutOutputGet`, handle, channel)
+}
+
+.DigitalOutTypeSetC <- function(handle, channel, type_code) {
+    invisible(.Call(`_dwf4r_DigitalOutTypeSet`, handle, channel, type_code))
+}
+
+.DigitalOutTypeGetC <- function(handle, channel) {
+    .Call(`_dwf4r_DigitalOutTypeGet`, handle, channel)
+}
+
+.DigitalOutIdleSetC <- function(handle, channel, idle_code) {
+    invisible(.Call(`_dwf4r_DigitalOutIdleSet`, handle, channel, idle_code))
+}
+
+.DigitalOutIdleGetC <- function(handle, channel) {
+    .Call(`_dwf4r_DigitalOutIdleGet`, handle, channel)
+}
+
+.DigitalOutDividerSetC <- function(handle, channel, divider) {
+    invisible(.Call(`_dwf4r_DigitalOutDividerSet`, handle, channel, divider))
+}
+
+.DigitalOutDividerGetC <- function(handle, channel) {
+    .Call(`_dwf4r_DigitalOutDividerGet`, handle, channel)
+}
+
+.DigitalOutDividerInitSetC <- function(handle, channel, initial_divider) {
+    invisible(.Call(`_dwf4r_DigitalOutDividerInitSet`, handle, channel, initial_divider))
+}
+
+.DigitalOutDividerInitGetC <- function(handle, channel) {
+    .Call(`_dwf4r_DigitalOutDividerInitGet`, handle, channel)
+}
+
+.DigitalOutCounterSetC <- function(handle, channel, low_count, high_count) {
+    invisible(.Call(`_dwf4r_DigitalOutCounterSet`, handle, channel, low_count, high_count))
+}
+
+.DigitalOutCounterGetC <- function(handle, channel) {
+    .Call(`_dwf4r_DigitalOutCounterGet`, handle, channel)
+}
+
+.DigitalOutCounterInitSetC <- function(handle, channel, initial_high, initial_count) {
+    invisible(.Call(`_dwf4r_DigitalOutCounterInitSet`, handle, channel, initial_high, initial_count))
+}
+
+.DigitalOutCounterInitGetC <- function(handle, channel) {
+    .Call(`_dwf4r_DigitalOutCounterInitGet`, handle, channel)
+}
+
+.DigitalOutDataSetC <- function(handle, channel, data, n_bits) {
+    invisible(.Call(`_dwf4r_DigitalOutDataSet`, handle, channel, data, n_bits))
+}
+
+.DigitalOutRunSetC <- function(handle, time_s) {
+    invisible(.Call(`_dwf4r_DigitalOutRunSet`, handle, time_s))
+}
+
+.DigitalOutRunGetC <- function(handle) {
+    .Call(`_dwf4r_DigitalOutRunGet`, handle)
+}
+
+.DigitalOutRunStatusC <- function(handle) {
+    .Call(`_dwf4r_DigitalOutRunStatus`, handle)
+}
+
+.DigitalOutWaitSetC <- function(handle, time_s) {
+    invisible(.Call(`_dwf4r_DigitalOutWaitSet`, handle, time_s))
+}
+
+.DigitalOutWaitGetC <- function(handle) {
+    .Call(`_dwf4r_DigitalOutWaitGet`, handle)
+}
+
+.DigitalOutRepeatSetC <- function(handle, repeat_count) {
+    invisible(.Call(`_dwf4r_DigitalOutRepeatSet`, handle, repeat_count))
+}
+
+.DigitalOutRepeatGetC <- function(handle) {
+    .Call(`_dwf4r_DigitalOutRepeatGet`, handle)
+}
+
+.DigitalOutRepeatStatusC <- function(handle) {
+    .Call(`_dwf4r_DigitalOutRepeatStatus`, handle)
+}
+
+.DigitalOutTriggerSourceSetC <- function(handle, source_code) {
+    invisible(.Call(`_dwf4r_DigitalOutTriggerSourceSet`, handle, source_code))
+}
+
+.DigitalOutTriggerSourceGetC <- function(handle) {
+    .Call(`_dwf4r_DigitalOutTriggerSourceGet`, handle)
+}
+
+.DigitalOutTriggerSlopeSetC <- function(handle, slope_code) {
+    invisible(.Call(`_dwf4r_DigitalOutTriggerSlopeSet`, handle, slope_code))
+}
+
+.DigitalOutTriggerSlopeGetC <- function(handle) {
+    .Call(`_dwf4r_DigitalOutTriggerSlopeGet`, handle)
+}
+
+.DigitalOutRepeatTriggerSetC <- function(handle, repeat_trigger) {
+    invisible(.Call(`_dwf4r_DigitalOutRepeatTriggerSet`, handle, repeat_trigger))
+}
+
+.DigitalOutRepeatTriggerGetC <- function(handle) {
+    .Call(`_dwf4r_DigitalOutRepeatTriggerGet`, handle)
+}
+
+.QueryDigitalOutChannelCountC <- function(handle) {
+    .Call(`_dwf4r_QueryDigitalOutChannelCount`, handle)
+}
+
+.QueryDigitalOutInternalClockFrequencyC <- function(handle) {
+    .Call(`_dwf4r_QueryDigitalOutInternalClockFrequency`, handle)
+}
+
+.QueryDigitalOutRunRangeC <- function(handle) {
+    .Call(`_dwf4r_QueryDigitalOutRunRange`, handle)
+}
+
+.QueryDigitalOutWaitRangeC <- function(handle) {
+    .Call(`_dwf4r_QueryDigitalOutWaitRange`, handle)
+}
+
+.QueryDigitalOutRepeatRangeC <- function(handle) {
+    .Call(`_dwf4r_QueryDigitalOutRepeatRange`, handle)
+}
+
+.QueryDigitalOutOutputMaskC <- function(handle, channel) {
+    .Call(`_dwf4r_QueryDigitalOutOutputMask`, handle, channel)
+}
+
+.QueryDigitalOutTypeMaskC <- function(handle, channel) {
+    .Call(`_dwf4r_QueryDigitalOutTypeMask`, handle, channel)
+}
+
+.QueryDigitalOutIdleMaskC <- function(handle, channel) {
+    .Call(`_dwf4r_QueryDigitalOutIdleMask`, handle, channel)
+}
+
+.QueryDigitalOutDividerRangeC <- function(handle, channel) {
+    .Call(`_dwf4r_QueryDigitalOutDividerRange`, handle, channel)
+}
+
+.QueryDigitalOutCounterRangeC <- function(handle, channel) {
+    .Call(`_dwf4r_QueryDigitalOutCounterRange`, handle, channel)
+}
+
+.QueryDigitalOutMaxDataBitsC <- function(handle, channel) {
+    .Call(`_dwf4r_QueryDigitalOutMaxDataBits`, handle, channel)
+}
+

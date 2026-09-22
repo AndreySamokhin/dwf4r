@@ -109,3 +109,95 @@ test_that(".AssertAnalogOut()", {
 })
 
 
+
+#==[ .AssertDigitalOut() ]======================================================
+
+test_that(".AssertDigitalOut()", {
+  the_env <- getFromNamespace("the", "dwf4r")
+  old_devices <- the_env$devices
+  on.exit(the_env$devices <- old_devices, add = TRUE)
+
+  device <- .MakeDeviceObject()
+  the_env$devices <- list(
+    list(device_handle = 123L)
+  )
+
+  local_mocked_bindings(
+    .QueryDigitalOutChannelCountC = function(handle) {
+      return(16L)
+    },
+    .QueryDigitalOutOutputMaskC = function(handle, channel) {
+      # push_pull, open_drain, three_state
+      return(11L)
+    },
+    .QueryDigitalOutTypeMaskC = function(handle, channel) {
+      # pulse, custom, random, play
+      return(39L)
+    },
+    .QueryDigitalOutIdleMaskC = function(handle, channel) {
+      # initial, high, three_state
+      return(13L)
+    },
+    .package = "dwf4r"
+  )
+
+  expect_null(.AssertDigitalOut(device))
+  expect_null(.AssertDigitalOut(device, channel = 0L))
+  expect_null(.AssertDigitalOut(device, channel = 15L))
+  expect_error(
+    .AssertDigitalOut(device, channel = 16L),
+    "'channel' is out of range"
+  )
+  expect_error(
+    .AssertDigitalOut(device, channel = -1L),
+    "channel"
+  )
+  expect_error(
+    .AssertDigitalOut(device, channel = 1.5),
+    "channel"
+  )
+
+  expect_null(.AssertDigitalOut(device, channel = 0L, output = "push_pull"))
+  expect_error(
+    .AssertDigitalOut(device, output = "push_pull"),
+    "'output' cannot be specified without 'channel'"
+  )
+  expect_error(
+    .AssertDigitalOut(device, channel = 0L, output = "invalid_output"),
+    "Output mode 'invalid_output' is not supported"
+  )
+
+  expect_null(.AssertDigitalOut(device, channel = 0L, func = "custom"))
+  expect_error(
+    .AssertDigitalOut(device, func = "pulse"),
+    "'func' cannot be specified without 'channel'"
+  )
+  expect_error(
+    .AssertDigitalOut(device, channel = 0L, func = "invalid_func"),
+    "Function 'invalid_func' is not supported"
+  )
+
+  expect_null(.AssertDigitalOut(device, channel = 0L, idle = "high"))
+  expect_error(
+    .AssertDigitalOut(device, idle = "initial"),
+    "'idle' cannot be specified without 'channel'"
+  )
+  expect_error(
+    .AssertDigitalOut(device, channel = 0L, idle = "invalid_idle"),
+    "Idle mode 'invalid_idle' is not supported"
+  )
+
+  # Capabilities are validated independently; relationships between them are
+  # intentionally not validated by '.AssertDigitalOut()'.
+  expect_null(
+    .AssertDigitalOut(
+      device,
+      channel = 0L,
+      output = "three_state",
+      func = "pulse",
+      idle = "high"
+    )
+  )
+})
+
+

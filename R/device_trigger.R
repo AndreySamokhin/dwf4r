@@ -5,6 +5,7 @@
 #'   Retrieve trigger capabilities of a WaveForms device.
 #'
 #' @template arg_device
+#' @template arg_validate_device
 #'
 #' @return
 #'   A character vector containing supported trigger source or slope names,
@@ -26,8 +27,11 @@ NULL
 #'   \code{"analog_out_1"}, \code{"analog_out_2"}, \code{"external_1"}, and
 #'   \code{"external_2"}.
 #' @export
-GetDeviceTriggerSources <- function(device) {
-  .AssertDevice(device)
+GetDeviceTriggerSources <- function(device, .validate_device = TRUE) {
+  checkmate::assertFlag(.validate_device)
+  if (.validate_device) {
+    .AssertDevice(device)
+  }
   source_mask <- .QueryDeviceTriggerSourceMaskC(device$device_handle)
   return(.ConvertMaskToNames(
     mask = source_mask,
@@ -42,8 +46,11 @@ GetDeviceTriggerSources <- function(device) {
 #'   the device. Possible values are \code{"rising"}, \code{"falling"}, and
 #'   \code{"either"}.
 #' @export
-GetDeviceTriggerSlopes <- function(device) {
-  .AssertDevice(device)
+GetDeviceTriggerSlopes <- function(device, .validate_device = TRUE) {
+  checkmate::assertFlag(.validate_device)
+  if (.validate_device) {
+    .AssertDevice(device)
+  }
   slope_mask <- .QueryDeviceTriggerSlopeMaskC(device$device_handle)
   return(.ConvertMaskToNames(
     mask = slope_mask,
