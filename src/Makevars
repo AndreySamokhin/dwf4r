@@ -1,0 +1,55 @@
+UNAME_S := $(shell uname -s)
+
+ifeq ($(UNAME_S),Linux)
+
+    # Default directory of the Digilent WaveForms SDK headers; the user may
+    # override this through 'Sys.setenv(DWF_INCLUDE_DIR = "...")'
+    DWF_INCLUDE_DIR ?= /usr/include/digilent/waveforms
+    DWF_INCLUDE_DIR := $(strip $(DWF_INCLUDE_DIR))
+    DWF_HEADER_OK := $(shell test -f "$(DWF_INCLUDE_DIR)/dwf.h" && printf yes)
+    ifeq ($(DWF_HEADER_OK),)
+        DWF_HEADER_ERROR := \
+            WaveForms SDK header not found at "$(DWF_INCLUDE_DIR)/dwf.h". \
+            Install the SDK in the default location or set DWF_INCLUDE_DIR \
+            before installation.
+        $(error $(DWF_HEADER_ERROR))
+    endif
+    PKG_CPPFLAGS += -I"$(DWF_INCLUDE_DIR)"
+
+    # Optional directory containing the Digilent WaveForms SDK library; the user
+    # may set this for non-standard installations through
+    # 'Sys.setenv(DWF_LIBRARY_DIR = "...")'
+    DWF_LIBRARY_DIR := $(strip $(DWF_LIBRARY_DIR))
+    ifneq ($(DWF_LIBRARY_DIR),)
+        PKG_LIBS += -L"$(DWF_LIBRARY_DIR)"
+        PKG_LIBS += -Wl,-rpath,"$(DWF_LIBRARY_DIR)"
+    endif
+    PKG_LIBS += -ldwf
+
+else ifeq ($(UNAME_S),Darwin)
+
+    # Default directory containing the Digilent WaveForms SDK framework; the
+    # user may override this through 'Sys.setenv(DWF_FRAMEWORKS_DIR = "...")'
+    DWF_FRAMEWORKS_DIR ?= /Library/Frameworks
+    DWF_FRAMEWORKS_DIR := $(strip $(DWF_FRAMEWORKS_DIR))
+    DWF_INC := $(DWF_FRAMEWORKS_DIR)/dwf.framework/Headers
+    DWF_HEADER_OK := $(shell test -f "$(DWF_INC)/dwf.h" && printf yes)
+    ifeq ($(DWF_HEADER_OK),)
+        DWF_HEADER_ERROR := \
+            WaveForms SDK header not found at "$(DWF_INC)/dwf.h". \
+            Install the SDK in the default location or set DWF_FRAMEWORKS_DIR \
+            before installation.
+        $(error $(DWF_HEADER_ERROR))
+    endif
+    PKG_CPPFLAGS += -I"$(DWF_INC)"
+    PKG_LIBS += -F"$(DWF_FRAMEWORKS_DIR)" -framework dwf
+    PKG_LIBS += -Wl,-rpath,"$(DWF_FRAMEWORKS_DIR)"
+
+else
+
+    UNSUPPORTED_OS_ERROR := Unsupported operating system: $(UNAME_S)
+    $(error $(UNSUPPORTED_OS_ERROR))
+
+endif
+
+

@@ -11,21 +11,17 @@ including waveform configuration, timing, triggering, and channel control.
 
 Before installing `dwf4r`, install the Digilent WaveForms SDK.
 
-On Windows, `dwf4r` expects the SDK to be installed by default in:
+By default, `dwf4r` expects the SDK files in the standard locations used by
+WaveForms:
 
-```text
-C:/Program Files/Digilent/WaveFormsSDK
-```
+- Windows: `C:/Program Files/Digilent/WaveFormsSDK`
+- Linux: `/usr/include/digilent/waveforms` for SDK headers, with the DWF library
+  available through the system library search path
+- macOS: `/Library/Frameworks/dwf.framework`
 
-The directory must contain the SDK header and 64-bit library directories:
-
-```text
-inc/dwf.h
-lib/x64
-```
-
-Because `dwf4r` contains compiled C++ code, Windows users also need an
-appropriate version of Rtools installed for their version of R.
+Because `dwf4r` contains compiled C++ code, an appropriate C++ build toolchain
+is also required. On Windows, install the version of Rtools appropriate for your
+version of R. Linux and macOS builds additionally require GNU make.
 
 
 ### Install from GitHub
@@ -45,20 +41,42 @@ remotes::install_github("andreysamokhin/dwf4r")
 
 ### Using a non-default SDK location
 
-If the WaveForms SDK is installed elsewhere, set the `DWF_SDK_PATH` environment
-variable before installing `dwf4r`. The variable must point to the root
-directory of the SDK.
+If the WaveForms SDK is installed in a non-default location, set the
+corresponding environment variable before installing `dwf4r`.
 
-For example:
+On Windows, `DWF_SDK_PATH` should point to the SDK root directory:
 
 ```r
 Sys.setenv(DWF_SDK_PATH = "D:/Digilent/WaveFormsSDK")
+```
+
+On Linux, `DWF_INCLUDE_DIR` should point to the directory containing `dwf.h`.
+If the DWF library is also outside the system library search path, set
+`DWF_LIBRARY_DIR` as well:
+
+```r
+Sys.setenv(
+  DWF_INCLUDE_DIR = "/opt/digilent/include/digilent/waveforms",
+  DWF_LIBRARY_DIR = "/opt/digilent/lib"
+)
+```
+
+On macOS, `DWF_FRAMEWORKS_DIR` should point to the directory containing
+`dwf.framework`:
+
+```r
+Sys.setenv(DWF_FRAMEWORKS_DIR = "/opt/digilent/Frameworks")
+```
+
+Then install the package normally:
+
+```r
 remotes::install_github("andreysamokhin/dwf4r")
 ```
 
-`Sys.setenv()` sets the variable for the current R session. For a persistent
-configuration, `DWF_SDK_PATH` can instead be defined in the user's `.Renviron`
-file or as a Windows environment variable before starting R.
+`Sys.setenv()` sets environment variables for the current R session. For a
+persistent configuration, they can instead be defined in the user's `.Renviron`
+file or as system environment variables before starting R.
 
 
 ## Documentation
@@ -66,9 +84,9 @@ file or as a Windows environment variable before starting R.
 The package reference manual and vignette are available online and, after
 installation, in the package *doc/* directory.
 
-* [Reference manual][dwf4r_manual]
-* ["Basic Analog Out Functionality" vignette][analog-out-basics_vignette]
-* ["Basic Digital Out Functionality" vignette][digital-out-basics_vignette]
+- [Reference manual][dwf4r_manual]
+- ["Basic Analog Out Functionality" vignette][analog-out-basics_vignette]
+- ["Basic Digital Out Functionality" vignette][digital-out-basics_vignette]
 
 
 <!-- Links -->

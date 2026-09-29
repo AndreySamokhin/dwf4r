@@ -1,7 +1,7 @@
 Type: Package
 Package: dwf4r
 Title: Unofficial R Interface to the Digilent WaveForms SDK
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: person("Andrey", "Samokhin",
                   email = "andrey.s.samokhin@gmail.com",
                   role = c("aut", "cre", "cph"),
@@ -17,7 +17,7 @@ BugReports: https://github.com/andreysamokhin/dwf4r/issues
 Encoding: UTF-8
 LazyData: true
 NeedsCompilation: yes
-SystemRequirements: Digilent WaveForms SDK (installed separately)
+SystemRequirements: Digilent WaveForms SDK, GNU make
 Imports: 
     checkmate,
     Rcpp
