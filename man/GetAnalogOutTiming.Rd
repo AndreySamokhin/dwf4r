@@ -7,19 +7,28 @@
 \alias{GetAnalogOutRepeat}
 \title{Get Analog Out timing}
 \usage{
-GetAnalogOutRun(device, channel)
+GetAnalogOutRun(device, channel, .validate_analog_out = TRUE)
 
-GetAnalogOutWait(device, channel)
+GetAnalogOutWait(device, channel, .validate_analog_out = TRUE)
 
-GetAnalogOutRepeat(device, channel)
+GetAnalogOutRepeat(device, channel, .validate_analog_out = TRUE)
 
-GetAnalogOutTiming(device, channel)
+GetAnalogOutTiming(device, channel, .validate_analog_out = TRUE)
 }
 \arguments{
 \item{device}{A \code{"dwf4r_device"} object returned by \code{OpenDevice()} that refers
 to a device connection that is still open.}
 
 \item{channel}{An integer scalar representing the zero-based Analog Out channel index.}
+
+\item{.validate_analog_out}{A logical scalar indicating whether the device and relevant Analog Out
+context should be validated before the operation. This argument is intended
+for advanced use to avoid repeated validation in controlled sequences of
+operations. Set to \code{FALSE} only when the device and relevant Analog
+Out context, such as the channel and node, have already been validated. The
+caller is responsible for ensuring that the device remains open and the
+validated context remains valid. Other argument validation and SDK error
+handling remain active.}
 }
 \value{
 \code{GetAnalogOutRun()} and \code{GetAnalogOutWait()} return a numeric

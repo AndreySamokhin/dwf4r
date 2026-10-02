@@ -149,8 +149,8 @@
     .Call(`_dwf4r_QueryAnalogOutChannelCount`, handle)
 }
 
-.QueryAnalogOutChannelNodesC <- function(handle, channel) {
-    .Call(`_dwf4r_QueryAnalogOutChannelNodes`, handle, channel)
+.QueryAnalogOutNodeMaskC <- function(handle, channel) {
+    .Call(`_dwf4r_QueryAnalogOutNodeMask`, handle, channel)
 }
 
 .QueryAnalogOutRunRangeC <- function(handle, channel) {
@@ -165,12 +165,12 @@
     .Call(`_dwf4r_QueryAnalogOutRepeatRange`, handle, channel)
 }
 
-.QueryAnalogOutIdleModesC <- function(handle, channel) {
-    .Call(`_dwf4r_QueryAnalogOutIdleModes`, handle, channel)
+.QueryAnalogOutIdleMaskC <- function(handle, channel) {
+    .Call(`_dwf4r_QueryAnalogOutIdleMask`, handle, channel)
 }
 
-.QueryAnalogOutNodeFunctionTypesC <- function(handle, channel, node) {
-    .Call(`_dwf4r_QueryAnalogOutNodeFunctionTypes`, handle, channel, node)
+.QueryAnalogOutNodeFunctionMaskC <- function(handle, channel, node) {
+    .Call(`_dwf4r_QueryAnalogOutNodeFunctionMask`, handle, channel, node)
 }
 
 .QueryAnalogOutNodeFrequencyRangeC <- function(handle, channel, node) {

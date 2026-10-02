@@ -12,8 +12,9 @@ test_that("Analog Out information queries", {
     .QueryAnalogOutChannelCountC = function(handle) {
       return(2L)
     },
-    .QueryAnalogOutChannelNodesC = function(handle, channel) {
-      return(c("carrier", "fm", "am"))
+    .QueryAnalogOutNodeMaskC = function(handle, channel) {
+      # carrier, fm, am
+      return(7L)
     },
     .QueryAnalogOutRunRangeC = function(handle, channel) {
       return(c(0, 86400))
@@ -24,11 +25,13 @@ test_that("Analog Out information queries", {
     .QueryAnalogOutRepeatRangeC = function(handle, channel) {
       return(c(0L, 32000L))
     },
-    .QueryAnalogOutIdleModesC = function(handle, channel) {
-      return(c("offset", "initial", "hold"))
+    .QueryAnalogOutIdleMaskC = function(handle, channel) {
+      # offset, initial, hold
+      return(14L)
     },
-    .QueryAnalogOutNodeFunctionTypesC = function(handle, channel, node) {
-      return(c("dc", "sine", "square"))
+    .QueryAnalogOutNodeFunctionMaskC = function(handle, channel, node) {
+      # dc, sine, square
+      return(7L)
     },
     .QueryAnalogOutNodeFrequencyRangeC = function(handle, channel, node) {
       return(c(1e-6, 1e8))

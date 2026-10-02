@@ -4,7 +4,12 @@
 \alias{SetAnalogOutRepeatTrigger}
 \title{Set Analog Out repeat triggering}
 \usage{
-SetAnalogOutRepeatTrigger(device, channel, repeat_trigger)
+SetAnalogOutRepeatTrigger(
+  device,
+  channel,
+  repeat_trigger,
+  .validate_analog_out = TRUE
+)
 }
 \arguments{
 \item{device}{A \code{"dwf4r_device"} object returned by \code{OpenDevice()} that refers
@@ -15,6 +20,15 @@ to a device connection that is still open.}
 \item{repeat_trigger}{A logical scalar. If \code{TRUE}, a new trigger is included in each
 wait-run repeat cycle. If \code{FALSE}, repeated cycles proceed without
 waiting for another trigger.}
+
+\item{.validate_analog_out}{A logical scalar indicating whether the device and relevant Analog Out
+context should be validated before the operation. This argument is intended
+for advanced use to avoid repeated validation in controlled sequences of
+operations. Set to \code{FALSE} only when the device and relevant Analog
+Out context, such as the channel and node, have already been validated. The
+caller is responsible for ensuring that the device remains open and the
+validated context remains valid. Other argument validation and SDK error
+handling remain active.}
 }
 \value{
 Invisibly returns \code{NULL}.

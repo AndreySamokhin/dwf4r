@@ -27,6 +27,11 @@ test_that(".ConvertMaskToNames()", {
     .ConvertMaskToNames(0L, code_map),
     character()
   )
+
+  expect_identical(
+    .ConvertMaskToNames(NA_integer_, list(bit_31 = 31L)),
+    "bit_31"
+  )
 })
 
 

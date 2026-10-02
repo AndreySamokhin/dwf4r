@@ -88,8 +88,8 @@ Out channel.
 
 ```{r generate_sine, eval = FALSE}
 ResetAnalogOut(device, channel = 0L)
-EnableCarrier(device, channel = 0L)
-SetCarrier(
+EnableAnalogOutCarrier(device, channel = 0L)
+SetAnalogOutCarrier(
   device,
   channel = 0L,
   func = "sine",
@@ -102,9 +102,9 @@ StartAnalogOut(device, channel = 0L)
 
 A short sequence of calls is used to prepare and start the output. First,
 `ResetAnalogOut()` restores the selected channel to its default configuration,
-providing a reproducible starting point. `EnableCarrier()` then enables the
-carrier node (the node that generates the principal waveform), while
-`SetCarrier()` adds the selected waveform parameters to the pending
+providing a reproducible starting point. `EnableAnalogOutCarrier()` then enables
+the carrier node (the node that generates the principal waveform), while
+`SetAnalogOutCarrier()` adds the selected waveform parameters to the pending
 configuration. Finally, `StartAnalogOut()` applies the pending configuration and
 starts signal generation.
 
@@ -136,7 +136,7 @@ code increases the carrier frequency from 1 kHz to 2 kHz and applies the updated
 configuration without restarting signal generation (Figure 2).
 
 ```{r modify_running_waveform, eval = FALSE}
-SetCarrierFrequency(device, channel = 0L, frequency = 2000)
+SetAnalogOutCarrierFrequency(device, channel = 0L, frequency = 2000)
 ApplyAnalogOutSettings(device, channel = 0L)
 ```
 
@@ -163,12 +163,12 @@ knitr::include_graphics("figures/analog-out-basics/sine-waveform-2000hz.png")
 Carrier parameters can similarly be updated individually using the dedicated
 setter functions:
 
-* `SetCarrierAmplitude()`
-* `SetCarrierFrequency()`
-* `SetCarrierFunction()`
-* `SetCarrierOffset()`
-* `SetCarrierPhase()`
-* `SetCarrierSymmetry()`
+* `SetAnalogOutCarrierAmplitude()`
+* `SetAnalogOutCarrierFrequency()`
+* `SetAnalogOutCarrierFunction()`
+* `SetAnalogOutCarrierOffset()`
+* `SetAnalogOutCarrierPhase()`
+* `SetAnalogOutCarrierSymmetry()`
 
 ## Inspect and stop waveform generation
 
@@ -342,7 +342,7 @@ single four-cycle sine burst.
 ```{r generate_four_cycle_burst, eval = FALSE}
 frequency <- 4000
 
-SetCarrierFrequency(device, channel = 0L, frequency = frequency)
+SetAnalogOutCarrierFrequency(device, channel = 0L, frequency = frequency)
 SetAnalogOutRun(device, channel = 0L, run_time = 4L / frequency)
 StartAnalogOut(device, channel = 0L)
 ```
@@ -500,14 +500,14 @@ local({
 })
 ```
 
-`SetCarrierData()` uploads the normalized sample vector to the carrier node. The
-`"custom"` carrier function must also be selected before generation starts. The
-frequency, amplitude, and offset retain their previously configured values of 4
-kHz, 1 V, and 0.5 V, respectively.
+`SetAnalogOutCarrierData()` uploads the normalized sample vector to the carrier
+node. The `"custom"` carrier function must also be selected before generation
+starts. The frequency, amplitude, and offset retain their previously configured
+values of 4 kHz, 1 V, and 0.5 V, respectively.
 
 ```{r generate_custom_waveform, eval = FALSE}
-SetCarrierFunction(device, channel = 0L, func = "custom")
-SetCarrierData(device, channel = 0L, data = waveform)
+SetAnalogOutCarrierFunction(device, channel = 0L, func = "custom")
+SetAnalogOutCarrierData(device, channel = 0L, data = waveform)
 StartAnalogOut(device, channel = 0L)
 ```
 
@@ -617,7 +617,7 @@ configured by the SDK. For example, the carrier frequency requested in the
 preceding examples was 4000 Hz.
 
 ```{r inspect_configured_frequency, eval = FALSE}
-GetCarrierFrequency(device, channel = 0L) - frequency
+GetAnalogOutCarrierFrequency(device, channel = 0L) - frequency
 
 #> [1] 0.0001899898
 ```
@@ -648,15 +648,15 @@ The following functions retrieve capabilities of a selected Analog Out node:
 
 The current carrier configuration can be inspected using:
 
-* `IsCarrierEnabled()`
-* `GetCarrierAmplitude()`
-* `GetCarrierFrequency()`
-* `GetCarrierFunction()`
-* `GetCarrierOffset()`
-* `GetCarrierPhase()`
-* `GetCarrierSettings()` (it retrieves all carrier parameters together as a
-  named list)
-* `GetCarrierSymmetry()`
+* `IsAnalogOutCarrierEnabled()`
+* `GetAnalogOutCarrierAmplitude()`
+* `GetAnalogOutCarrierFrequency()`
+* `GetAnalogOutCarrierFunction()`
+* `GetAnalogOutCarrierOffset()`
+* `GetAnalogOutCarrierPhase()`
+* `GetAnalogOutCarrierSettings()` (it retrieves all carrier parameters together
+  as a named list)
+* `GetAnalogOutCarrierSymmetry()`
 
 The channel-level Analog Out configuration can be inspected using:
 
@@ -685,10 +685,10 @@ amplitudes are 1 V and 1.5 V.
 ResetAnalogOut(device, channel = 0L)
 ResetAnalogOut(device, channel = 1L)
 
-EnableCarrier(device, channel = 0L)
-EnableCarrier(device, channel = 1L)
+EnableAnalogOutCarrier(device, channel = 0L)
+EnableAnalogOutCarrier(device, channel = 1L)
 
-SetCarrier(
+SetAnalogOutCarrier(
   device,
   channel = 0L,
   func = "sine",
@@ -697,7 +697,7 @@ SetCarrier(
   offset = 0,
   phase = 0
 )
-SetCarrier(
+SetAnalogOutCarrier(
   device,
   channel = 1L,
   func = "sine",

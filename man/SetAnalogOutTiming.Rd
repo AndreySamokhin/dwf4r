@@ -7,18 +7,19 @@
 \alias{SetAnalogOutRepeat}
 \title{Set Analog Out timing}
 \usage{
-SetAnalogOutRun(device, channel, run_time)
+SetAnalogOutRun(device, channel, run_time, .validate_analog_out = TRUE)
 
-SetAnalogOutWait(device, channel, wait_time)
+SetAnalogOutWait(device, channel, wait_time, .validate_analog_out = TRUE)
 
-SetAnalogOutRepeat(device, channel, repeat_count)
+SetAnalogOutRepeat(device, channel, repeat_count, .validate_analog_out = TRUE)
 
 SetAnalogOutTiming(
   device,
   channel,
   run_time = NULL,
   wait_time = NULL,
-  repeat_count = NULL
+  repeat_count = NULL,
+  .validate_analog_out = TRUE
 )
 }
 \arguments{
@@ -29,6 +30,15 @@ to a device connection that is still open.}
 
 \item{run_time}{A numeric scalar specifying the run length in seconds. A value of
 \code{0} requests continuous generation.}
+
+\item{.validate_analog_out}{A logical scalar indicating whether the device and relevant Analog Out
+context should be validated before the operation. This argument is intended
+for advanced use to avoid repeated validation in controlled sequences of
+operations. Set to \code{FALSE} only when the device and relevant Analog
+Out context, such as the channel and node, have already been validated. The
+caller is responsible for ensuring that the device remains open and the
+validated context remains valid. Other argument validation and SDK error
+handling remain active.}
 
 \item{wait_time}{A numeric scalar specifying the delay, in seconds, between receiving a
 trigger and beginning signal generation. A value of \code{0} disables

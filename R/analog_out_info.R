@@ -7,6 +7,8 @@
 #' @template arg_device
 #' @template arg_analog_out_channel
 #' @template arg_node
+#' @template arg_validate_device
+#' @template arg_validate_analog_out
 #'
 #' @return
 #'   An integer, numeric, or character vector describing the requested Analog
@@ -26,9 +28,13 @@ NULL
 #' @description
 #'   \code{GetAnalogOutChannelCount()} returns the number of Analog Out
 #'   channels.
+#' @importFrom checkmate assertFlag
 #' @export
-GetAnalogOutChannelCount <- function(device) {
-  .AssertDevice(device)
+GetAnalogOutChannelCount <- function(device, .validate_device = TRUE) {
+  checkmate::assertFlag(.validate_device)
+  if (.validate_device) {
+    .AssertDevice(device)
+  }
   return(.QueryAnalogOutChannelCountC(device$device_handle))
 }
 
@@ -37,13 +43,22 @@ GetAnalogOutChannelCount <- function(device) {
 #' @description
 #'   \code{GetAnalogOutChannelNodes()} returns the nodes supported by an Analog
 #'   Out channel.
+#' @importFrom checkmate assertFlag
 #' @export
-GetAnalogOutChannelNodes <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
-  return(.QueryAnalogOutChannelNodesC(
+GetAnalogOutChannelNodes <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
+  node_mask <- .QueryAnalogOutNodeMaskC(
     device$device_handle,
     as.integer(channel)
-  ))
+  )
+  return(.ConvertMaskToNames(node_mask, .dwf_constants$analog_out$node_code))
 }
 
 
@@ -51,9 +66,17 @@ GetAnalogOutChannelNodes <- function(device, channel) {
 #' @description
 #'   \code{GetAnalogOutRunRange()} returns the supported run-time range, in
 #'   seconds, for an Analog Out channel.
+#' @importFrom checkmate assertFlag
 #' @export
-GetAnalogOutRunRange <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
+GetAnalogOutRunRange <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+    ) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
   return(.QueryAnalogOutRunRangeC(
     device$device_handle,
     as.integer(channel)
@@ -65,9 +88,17 @@ GetAnalogOutRunRange <- function(device, channel) {
 #' @description
 #'   \code{GetAnalogOutWaitRange()} returns the supported wait-time range, in
 #'   seconds, for an Analog Out channel.
+#' @importFrom checkmate assertFlag
 #' @export
-GetAnalogOutWaitRange <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
+GetAnalogOutWaitRange <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
   return(.QueryAnalogOutWaitRangeC(
     device$device_handle,
     as.integer(channel)
@@ -79,9 +110,17 @@ GetAnalogOutWaitRange <- function(device, channel) {
 #' @description
 #'   \code{GetAnalogOutRepeatRange()} returns the supported repeat-count range
 #'   for an Analog Out channel.
+#' @importFrom checkmate assertFlag
 #' @export
-GetAnalogOutRepeatRange <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
+GetAnalogOutRepeatRange <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
   return(.QueryAnalogOutRepeatRangeC(
     device$device_handle,
     as.integer(channel)
@@ -93,13 +132,22 @@ GetAnalogOutRepeatRange <- function(device, channel) {
 #' @description
 #'   \code{GetAnalogOutIdleModes()} returns the idle output modes supported by
 #'   an Analog Out channel.
+#' @importFrom checkmate assertFlag
 #' @export
-GetAnalogOutIdleModes <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
-  return(.QueryAnalogOutIdleModesC(
+GetAnalogOutIdleModes <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
+  idle_mask <- .QueryAnalogOutIdleMaskC(
     device$device_handle,
     as.integer(channel)
-  ))
+  )
+  return(.ConvertMaskToNames(idle_mask, .dwf_constants$analog_out$idle_code))
 }
 
 
@@ -107,13 +155,26 @@ GetAnalogOutIdleModes <- function(device, channel) {
 #' @description
 #'   \code{GetAnalogOutNodeFunctionTypes()} returns the waveform functions
 #'   supported by an Analog Out node.
+#' @importFrom checkmate assertFlag
 #' @export
-GetAnalogOutNodeFunctionTypes <- function(device, channel, node) {
-  .AssertAnalogOut(device, channel = channel, node = node)
-  return(.QueryAnalogOutNodeFunctionTypesC(
+GetAnalogOutNodeFunctionTypes <- function(
+    device,
+    channel,
+    node,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel, node = node)
+  }
+  function_mask <- .QueryAnalogOutNodeFunctionMaskC(
     device$device_handle,
     as.integer(channel),
     .dwf_constants$analog_out$node_code[[node]]
+  )
+  return(.ConvertMaskToNames(
+    function_mask,
+    .dwf_constants$analog_out$function_code
   ))
 }
 
@@ -122,9 +183,18 @@ GetAnalogOutNodeFunctionTypes <- function(device, channel, node) {
 #' @description
 #'   \code{GetAnalogOutNodeFrequencyRange()} returns the supported frequency
 #'   range for an Analog Out node.
+#' @importFrom checkmate assertFlag
 #' @export
-GetAnalogOutNodeFrequencyRange <- function(device, channel, node) {
-  .AssertAnalogOut(device, channel = channel, node = node)
+GetAnalogOutNodeFrequencyRange <- function(
+    device,
+    channel,
+    node,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel, node = node)
+  }
   return(.QueryAnalogOutNodeFrequencyRangeC(
     device$device_handle,
     as.integer(channel),
@@ -137,9 +207,18 @@ GetAnalogOutNodeFrequencyRange <- function(device, channel, node) {
 #' @description
 #'   \code{GetAnalogOutNodeAmplitudeRange()} returns the supported amplitude
 #'   range for an Analog Out node.
+#' @importFrom checkmate assertFlag
 #' @export
-GetAnalogOutNodeAmplitudeRange <- function(device, channel, node) {
-  .AssertAnalogOut(device, channel = channel, node = node)
+GetAnalogOutNodeAmplitudeRange <- function(
+    device,
+    channel,
+    node,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel, node = node)
+  }
   return(.QueryAnalogOutNodeAmplitudeRangeC(
     device$device_handle,
     as.integer(channel),
@@ -152,9 +231,18 @@ GetAnalogOutNodeAmplitudeRange <- function(device, channel, node) {
 #' @description
 #'   \code{GetAnalogOutNodeOffsetRange()} returns the supported offset range for
 #'   an Analog Out node.
+#' @importFrom checkmate assertFlag
 #' @export
-GetAnalogOutNodeOffsetRange <- function(device, channel, node) {
-  .AssertAnalogOut(device, channel = channel, node = node)
+GetAnalogOutNodeOffsetRange <- function(
+    device,
+    channel,
+    node,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel, node = node)
+  }
   return(.QueryAnalogOutNodeOffsetRangeC(
     device$device_handle,
     as.integer(channel),
@@ -167,9 +255,18 @@ GetAnalogOutNodeOffsetRange <- function(device, channel, node) {
 #' @description
 #'   \code{GetAnalogOutNodeSymmetryRange()} returns the supported symmetry range
 #'   for an Analog Out node.
+#' @importFrom checkmate assertFlag
 #' @export
-GetAnalogOutNodeSymmetryRange <- function(device, channel, node) {
-  .AssertAnalogOut(device, channel = channel, node = node)
+GetAnalogOutNodeSymmetryRange <- function(
+    device,
+    channel,
+    node,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel, node = node)
+  }
   return(.QueryAnalogOutNodeSymmetryRangeC(
     device$device_handle,
     as.integer(channel),
@@ -182,9 +279,18 @@ GetAnalogOutNodeSymmetryRange <- function(device, channel, node) {
 #' @description
 #'   \code{GetAnalogOutNodePhaseRange()} returns the supported phase range, in
 #'   degrees, for an Analog Out node.
+#' @importFrom checkmate assertFlag
 #' @export
-GetAnalogOutNodePhaseRange <- function(device, channel, node) {
-  .AssertAnalogOut(device, channel = channel, node = node)
+GetAnalogOutNodePhaseRange <- function(
+    device,
+    channel,
+    node,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel, node = node)
+  }
   return(.QueryAnalogOutNodePhaseRangeC(
     device$device_handle,
     as.integer(channel),
@@ -196,9 +302,18 @@ GetAnalogOutNodePhaseRange <- function(device, channel, node) {
 #' @description
 #'   \code{GetAnalogOutNodeSampleCountRange()} returns the supported range of
 #'   sample counts for custom waveform data.
+#' @importFrom checkmate assertFlag
 #' @export
-GetAnalogOutNodeSampleCountRange <- function(device, channel, node) {
-  .AssertAnalogOut(device, channel = channel, node = node)
+GetAnalogOutNodeSampleCountRange <- function(
+    device,
+    channel,
+    node,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel, node = node)
+  }
   return(.QueryAnalogOutNodeSampleCountRangeC(
     device$device_handle,
     as.integer(channel),

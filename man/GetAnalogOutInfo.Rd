@@ -17,37 +17,78 @@
 \alias{GetAnalogOutNodeSampleCountRange}
 \title{Get Analog Out characteristics}
 \usage{
-GetAnalogOutChannelCount(device)
+GetAnalogOutChannelCount(device, .validate_device = TRUE)
 
-GetAnalogOutChannelNodes(device, channel)
+GetAnalogOutChannelNodes(device, channel, .validate_analog_out = TRUE)
 
-GetAnalogOutRunRange(device, channel)
+GetAnalogOutRunRange(device, channel, .validate_analog_out = TRUE)
 
-GetAnalogOutWaitRange(device, channel)
+GetAnalogOutWaitRange(device, channel, .validate_analog_out = TRUE)
 
-GetAnalogOutRepeatRange(device, channel)
+GetAnalogOutRepeatRange(device, channel, .validate_analog_out = TRUE)
 
-GetAnalogOutIdleModes(device, channel)
+GetAnalogOutIdleModes(device, channel, .validate_analog_out = TRUE)
 
-GetAnalogOutNodeFunctionTypes(device, channel, node)
+GetAnalogOutNodeFunctionTypes(
+  device,
+  channel,
+  node,
+  .validate_analog_out = TRUE
+)
 
-GetAnalogOutNodeFrequencyRange(device, channel, node)
+GetAnalogOutNodeFrequencyRange(
+  device,
+  channel,
+  node,
+  .validate_analog_out = TRUE
+)
 
-GetAnalogOutNodeAmplitudeRange(device, channel, node)
+GetAnalogOutNodeAmplitudeRange(
+  device,
+  channel,
+  node,
+  .validate_analog_out = TRUE
+)
 
-GetAnalogOutNodeOffsetRange(device, channel, node)
+GetAnalogOutNodeOffsetRange(device, channel, node, .validate_analog_out = TRUE)
 
-GetAnalogOutNodeSymmetryRange(device, channel, node)
+GetAnalogOutNodeSymmetryRange(
+  device,
+  channel,
+  node,
+  .validate_analog_out = TRUE
+)
 
-GetAnalogOutNodePhaseRange(device, channel, node)
+GetAnalogOutNodePhaseRange(device, channel, node, .validate_analog_out = TRUE)
 
-GetAnalogOutNodeSampleCountRange(device, channel, node)
+GetAnalogOutNodeSampleCountRange(
+  device,
+  channel,
+  node,
+  .validate_analog_out = TRUE
+)
 }
 \arguments{
 \item{device}{A \code{"dwf4r_device"} object returned by \code{OpenDevice()} that refers
 to a device connection that is still open.}
 
+\item{.validate_device}{A logical scalar indicating whether the device should be validated before
+the operation. This argument is intended for advanced use to avoid repeated
+validation in controlled sequences of operations. Set to \code{FALSE} only
+when the device has already been validated. The caller is responsible for
+ensuring that the device remains open. Other argument validation and SDK
+error handling remain active.}
+
 \item{channel}{An integer scalar representing the zero-based Analog Out channel index.}
+
+\item{.validate_analog_out}{A logical scalar indicating whether the device and relevant Analog Out
+context should be validated before the operation. This argument is intended
+for advanced use to avoid repeated validation in controlled sequences of
+operations. Set to \code{FALSE} only when the device and relevant Analog
+Out context, such as the channel and node, have already been validated. The
+caller is responsible for ensuring that the device remains open and the
+validated context remains valid. Other argument validation and SDK error
+handling remain active.}
 
 \item{node}{A string specifying the Analog Out node. One of \code{"carrier"},
 \code{"fm"}, or \code{"am"}.}

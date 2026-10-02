@@ -1,6 +1,5 @@
 #include <Rcpp.h>
-#include <vector>
-#include <string>
+#include <cstring> // std::memcpy
 
 #include "dwf.h"
 #include "helpers.h"
@@ -8,65 +7,21 @@
 namespace {
 
 //==============================================================================
-Rcpp::CharacterVector FunctionNamesFromMask(const unsigned int mask) {
+using AnalogOutChannelMaskFun = int (*)(HDWF, int, int*);
+int QueryAnalogOutChannelMask(
+    const int handle,
+    const int channel,
+    AnalogOutChannelMaskFun mask_fun,
+    const char* fun_name) {
 
-  struct FunctionDef {
-    unsigned int code;
-    const char* name;
-  };
-  static const FunctionDef kFunctions[] = {
-    {static_cast<unsigned int>(funcDC), "dc"},
-    {static_cast<unsigned int>(funcSine), "sine"},
-    {static_cast<unsigned int>(funcSquare), "square"},
-    {static_cast<unsigned int>(funcTriangle), "triangle"},
-    {static_cast<unsigned int>(funcRampUp), "ramp_up"},
-    {static_cast<unsigned int>(funcRampDown), "ramp_down"},
-    {static_cast<unsigned int>(funcNoise), "noise"},
-    {static_cast<unsigned int>(funcPulse), "pulse"},
-    {static_cast<unsigned int>(funcTrapezium), "trapezium"},
-    {static_cast<unsigned int>(funcSinePower), "sine_power"},
-    {static_cast<unsigned int>(funcSineNA), "sine_na"},
-    {static_cast<unsigned int>(funcDualCustom), "dual_custom"},
-    {static_cast<unsigned int>(funcDualPattern), "dual_pattern"},
-    {static_cast<unsigned int>(funcCustomPattern), "custom_pattern"},
-    {static_cast<unsigned int>(funcPlayPattern), "play_pattern"},
-    {static_cast<unsigned int>(funcCustom), "custom"},
-    {static_cast<unsigned int>(funcPlay), "play"}
-  };
+  const HDWF hdwf = AsHandle(handle);
+  int mask = 0;
 
-  std::vector<std::string> out;
-  for (const FunctionDef& item : kFunctions) {
-    if (IsBitSetSafe(mask, item.code)) {
-      out.push_back(item.name);
-    }
+  if (!mask_fun(hdwf, channel, &mask)) {
+    ThrowDwfError(fun_name);
   }
-  return Rcpp::wrap(out);
-}
 
-
-
-//==============================================================================
-Rcpp::CharacterVector IdleModeNamesFromMask(const unsigned int mask) {
-
-  struct IdleModeDef {
-    unsigned int code;
-    const char* name;
-  };
-
-  static const IdleModeDef kIdleModes[] = {
-    {static_cast<unsigned int>(DwfAnalogOutIdleDisable), "disable"},
-    {static_cast<unsigned int>(DwfAnalogOutIdleOffset), "offset"},
-    {static_cast<unsigned int>(DwfAnalogOutIdleInitial), "initial"},
-    {static_cast<unsigned int>(DwfAnalogOutIdleHold), "hold"}
-  };
-
-  std::vector<std::string> out;
-  for (const IdleModeDef& item : kIdleModes) {
-    if (IsBitSetSafe(mask, item.code)) {
-      out.push_back(item.name);
-    }
-  }
-  return Rcpp::wrap(out);
+  return mask;
 }
 
 
@@ -131,32 +86,16 @@ int QueryAnalogOutChannelCount(const int handle) {
 
 
 //==============================================================================
-// Queries the types of Analog Out nodes supported by a selected channel of an
-// opened device.
+// Queries the supported Analog Out node bitmask of a selected channel.
 //
-// [[Rcpp::export(name = ".QueryAnalogOutChannelNodesC")]]
-Rcpp::CharacterVector QueryAnalogOutChannelNodes(const int handle,
-                                                 const int channel) {
-  const HDWF hdwf = AsHandle(handle);
-
-  int node_mask = 0;
-  if (!FDwfAnalogOutNodeInfo(hdwf, channel, &node_mask)) {
-    ThrowDwfError("FDwfAnalogOutNodeInfo");
-  }
-
-  std::vector<std::string> out;
-  unsigned int node_mask_u = static_cast<unsigned int>(node_mask);
-  if (IsBitSetSafe(node_mask_u, AnalogOutNodeCarrier)) {
-    out.push_back("carrier");
-  }
-  if (IsBitSetSafe(node_mask_u, AnalogOutNodeFM)) {
-    out.push_back("fm");
-  }
-  if (IsBitSetSafe(node_mask_u, AnalogOutNodeAM)) {
-    out.push_back("am");
-  }
-
-  return Rcpp::wrap(out);
+// [[Rcpp::export(name = ".QueryAnalogOutNodeMaskC")]]
+int QueryAnalogOutNodeMask(const int handle, const int channel) {
+  return QueryAnalogOutChannelMask(
+    handle,
+    channel,
+    FDwfAnalogOutNodeInfo,
+    "FDwfAnalogOutNodeInfo"
+  );
 }
 
 
@@ -221,43 +160,48 @@ Rcpp::IntegerVector QueryAnalogOutRepeatRange(const int handle,
 
 
 //==============================================================================
-// Queries the idle output modes supported by a selected Analog Out channel of
-// an opened device.
+// Queries the supported Analog Out idle-mode bitmask of a selected channel.
 //
-// [[Rcpp::export(name = ".QueryAnalogOutIdleModesC")]]
-Rcpp::CharacterVector QueryAnalogOutIdleModes(const int handle,
-                                              const int channel) {
-  const HDWF hdwf = AsHandle(handle);
-  int idle_mask = 0;
-
-  if (!FDwfAnalogOutIdleInfo(hdwf, channel, &idle_mask)) {
-    ThrowDwfError("FDwfAnalogOutIdleInfo");
-  }
-
-  return IdleModeNamesFromMask(
-    static_cast<unsigned int>(idle_mask)
+// [[Rcpp::export(name = ".QueryAnalogOutIdleMaskC")]]
+int QueryAnalogOutIdleMask(const int handle, const int channel) {
+  return QueryAnalogOutChannelMask(
+    handle,
+    channel,
+    FDwfAnalogOutIdleInfo,
+    "FDwfAnalogOutIdleInfo"
   );
 }
 
 
 
 //==============================================================================
-// Queries the waveform functions supported by a selected Analog Out node of an
-// opened device.
+// Queries the supported waveform-function bitmask of a selected Analog Out node.
 //
-// [[Rcpp::export(name = ".QueryAnalogOutNodeFunctionTypesC")]]
-Rcpp::CharacterVector QueryAnalogOutNodeFunctionTypes(const int handle,
-                                                      const int channel,
-                                                      const int node) {
+// [[Rcpp::export(name = ".QueryAnalogOutNodeFunctionMaskC")]]
+int QueryAnalogOutNodeFunctionMask(const int handle,
+                                   const int channel,
+                                   const int node) {
   const HDWF hdwf = AsHandle(handle);
-  const AnalogOutNode node_as_enum = static_cast<AnalogOutNode>(node);
+  const AnalogOutNode node_enum = static_cast<AnalogOutNode>(node);
   unsigned int mask = 0U;
-  if (!FDwfAnalogOutNodeFunctionInfo(hdwf, channel, node_as_enum, &mask)) {
+
+  if (!FDwfAnalogOutNodeFunctionInfo(
+      hdwf,
+      channel,
+      node_enum,
+      &mask)) {
     ThrowDwfError("FDwfAnalogOutNodeFunctionInfo");
   }
-  return FunctionNamesFromMask(mask);
-}
 
+  // Preserve the 32-bit mask for processing with intToBits() in R.
+  int mask_as_int = 0;
+  static_assert(
+    sizeof(int) == sizeof(unsigned int),
+    "Expected int and unsigned int to have equal size."
+  );
+  std::memcpy(&mask_as_int, &mask, sizeof(mask));
+  return mask_as_int;
+}
 
 
 //==============================================================================

@@ -16,6 +16,7 @@
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
@@ -26,8 +27,11 @@
 #'
 #' @export
 #==============================================================================#
-ResetAnalogOut <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
+ResetAnalogOut <- function(device, channel, .validate_analog_out = TRUE) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
   .AnalogOutResetC(device$device_handle, as.integer(channel))
   return(invisible(NULL))
 }
@@ -47,6 +51,8 @@ ResetAnalogOut <- function(device, channel) {
 #'   A zero-based Analog Out channel index.
 #' @param action
 #'   A string specifying the configuration action.
+#' @param .validate_analog_out
+#'   Whether to validate the device using \code{.AssertAnalogOut()}.
 #'
 #' @return
 #'   Invisibly returns \code{NULL}.
@@ -55,8 +61,16 @@ ResetAnalogOut <- function(device, channel) {
 #'
 #' @noRd
 #==============================================================================#
-.ConfigureAnalogOut <- function(device, channel, action) {
-  .AssertAnalogOut(device, channel = channel)
+.ConfigureAnalogOut <- function(
+    device,
+    channel,
+    action,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
   checkmate::assertChoice(action, c("apply", "start", "stop"))
 
   action_code <- c(stop = 0L, start = 1L, apply = 3L)
@@ -80,6 +94,7 @@ ResetAnalogOut <- function(device, channel) {
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
@@ -97,8 +112,18 @@ NULL
 #' @description
 #'   \code{ApplyAnalogOutSettings()} applies updated Analog Out settings.
 #' @export
-ApplyAnalogOutSettings <- function(device, channel) {
-  .ConfigureAnalogOut(device = device, channel = channel, action = "apply")
+ApplyAnalogOutSettings <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
+  .ConfigureAnalogOut(
+    device = device,
+    channel = channel,
+    action = "apply",
+    .validate_analog_out = .validate_analog_out
+  )
+  return(invisible(NULL))
 }
 
 
@@ -106,8 +131,14 @@ ApplyAnalogOutSettings <- function(device, channel) {
 #' @description
 #'   \code{StartAnalogOut()} starts Analog Out generation.
 #' @export
-StartAnalogOut <- function(device, channel) {
-  .ConfigureAnalogOut(device = device, channel = channel, action = "start")
+StartAnalogOut <- function(device, channel, .validate_analog_out = TRUE) {
+  .ConfigureAnalogOut(
+    device = device,
+    channel = channel,
+    action = "start",
+    .validate_analog_out = .validate_analog_out
+  )
+  return(invisible(NULL))
 }
 
 
@@ -115,8 +146,14 @@ StartAnalogOut <- function(device, channel) {
 #' @description
 #'   \code{StopAnalogOut()} stops Analog Out generation.
 #' @export
-StopAnalogOut <- function(device, channel) {
-  .ConfigureAnalogOut(device = device, channel = channel, action = "stop")
+StopAnalogOut <- function(device, channel, .validate_analog_out = TRUE) {
+  .ConfigureAnalogOut(
+    device = device,
+    channel = channel,
+    action = "stop",
+    .validate_analog_out = .validate_analog_out
+  )
+  return(invisible(NULL))
 }
 
 
@@ -129,6 +166,7 @@ StopAnalogOut <- function(device, channel) {
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
@@ -142,8 +180,11 @@ StopAnalogOut <- function(device, channel) {
 #'
 #' @export
 #==============================================================================#
-GetAnalogOutStatus <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
+GetAnalogOutStatus <- function(device, channel, .validate_analog_out = TRUE) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
   return(.AnalogOutStatusC(device$device_handle, as.integer(channel)))
 }
 
@@ -160,6 +201,8 @@ GetAnalogOutStatus <- function(device, channel) {
 #'   A string specifying the Analog Out node.
 #' @param mode
 #'   A string specifying the node mode (see local variable \code{mode_map}).
+#' @param .validate_analog_out
+#'   Whether to validate the device using \code{.AssertAnalogOut()}.
 #'
 #' @return
 #'   Invisibly returns \code{NULL}.
@@ -172,12 +215,16 @@ GetAnalogOutStatus <- function(device, channel) {
     device,
     channel,
     node,
-    mode
+    mode,
+    .validate_analog_out = TRUE
 ) {
 
   #--[ Check input arguments ]--------------------------------------------------
 
-  .AssertAnalogOut(device, channel = channel, node = node)
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel, node = node)
+  }
 
   mode_map <- switch(
     node,
@@ -210,6 +257,7 @@ GetAnalogOutStatus <- function(device, channel) {
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @details
 #'   These functions change the carrier node configuration. To apply the
@@ -222,35 +270,45 @@ GetAnalogOutStatus <- function(device, channel) {
 #' @return
 #'   Invisibly returns \code{NULL}.
 #'
-#' @name CarrierEnableDisable
+#' @name AnalogOutCarrierEnableDisable
 #==============================================================================#
 NULL
 
 
-#' @rdname CarrierEnableDisable
+#' @rdname AnalogOutCarrierEnableDisable
 #' @description
-#'   \code{EnableCarrier()} enables the carrier node.
+#'   \code{EnableAnalogOutCarrier()} enables the carrier node.
 #' @export
-EnableCarrier <- function(device, channel) {
+EnableAnalogOutCarrier <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
   .SetAnalogOutNodeMode(
     device = device,
     channel = channel,
     node = "carrier",
-    mode = "enable"
+    mode = "enable",
+    .validate_analog_out = .validate_analog_out
   )
 }
 
 
-#' @rdname CarrierEnableDisable
+#' @rdname AnalogOutCarrierEnableDisable
 #' @description
-#'   \code{DisableCarrier()} disables the carrier node.
+#'   \code{DisableAnalogOutCarrier()} disables the carrier node.
 #' @export
-DisableCarrier <- function(device, channel) {
+DisableAnalogOutCarrier <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
   .SetAnalogOutNodeMode(
     device = device,
     channel = channel,
     node = "carrier",
-    mode = "disable"
+    mode = "disable",
+    .validate_analog_out = .validate_analog_out
   )
 }
 
@@ -265,6 +323,7 @@ DisableCarrier <- function(device, channel) {
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
@@ -276,8 +335,15 @@ DisableCarrier <- function(device, channel) {
 #'
 #' @export
 #==============================================================================#
-IsCarrierEnabled <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
+IsAnalogOutCarrierEnabled <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
   mode_code <- .AnalogOutNodeEnableGetC(
     handle = device$device_handle,
     channel = as.integer(channel),
@@ -310,15 +376,14 @@ IsCarrierEnabled <- function(device, channel) {
 #'   A string specifying the Analog Out node.
 #' @param func
 #'   A string specifying the waveform function.
-#' @param validate
-#'   A logical scalar indicating whether \code{device}, \code{channel}, and
-#'   \code{node} should be validated. Set to \code{FALSE} only when these
-#'   arguments have already been validated by the calling function.
+#' @param .validate_analog_out
+#'   Whether to validate the device using \code{.AssertAnalogOut()}.
 #'
 #' @return
 #'   Invisibly returns \code{NULL}.
 #'
 #' @importFrom checkmate assertFlag
+#' @importFrom checkmate assertChoice
 #'
 #' @noRd
 #==============================================================================#
@@ -327,13 +392,15 @@ IsCarrierEnabled <- function(device, channel) {
     channel,
     node,
     func,
-    validate = TRUE
+    .validate_analog_out = TRUE
 ) {
 
   #--[ Check input arguments ]--------------------------------------------------
 
-  checkmate::assertFlag(validate)
-  if (validate) {
+  checkmate::assertChoice(func, names(.dwf_constants$analog_out$function_code))
+
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
     .AssertAnalogOut(device, channel = channel, node = node, func = func)
   }
 
@@ -364,10 +431,8 @@ IsCarrierEnabled <- function(device, channel) {
 #'   \code{"amplitude"}, \code{"offset"}, \code{"symmetry"}, or \code{"phase"}).
 #' @param value
 #'   A numeric scalar to set.
-#' @param validate
-#'   A logical scalar indicating whether \code{device}, \code{channel}, and
-#'   \code{node} should be validated. Set to \code{FALSE} only when these
-#'   arguments have already been validated by the calling function.
+#' @param .validate_analog_out
+#'   Whether to validate the device using \code{.AssertAnalogOut()}.
 #'
 #' @return
 #'   Invisibly returns \code{NULL}.
@@ -384,13 +449,13 @@ IsCarrierEnabled <- function(device, channel) {
     node,
     param,
     value,
-    validate = TRUE
+    .validate_analog_out = TRUE
 ) {
 
   #--[ Check input arguments ]--------------------------------------------------
 
-  checkmate::assertFlag(validate)
-  if (validate) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
     .AssertAnalogOut(device, channel = channel, node = node)
   }
   checkmate::assertChoice(
@@ -464,6 +529,7 @@ IsCarrierEnabled <- function(device, channel) {
 #' @template arg_offset
 #' @template arg_symmetry
 #' @template arg_phase
+#' @template arg_validate_analog_out
 #'
 #' @details
 #'   These functions set carrier parameters only. Use
@@ -472,8 +538,8 @@ IsCarrierEnabled <- function(device, channel) {
 #'   apply settings and start generation.
 #'
 #'   The requested value may differ from the value actually configured by the
-#'   device; use the corresponding \code{GetCarrier*()} function to retrieve the
-#'   actual value.
+#'   device; use the corresponding \code{GetAnalogOutCarrier*()} function to
+#'   retrieve the actual value.
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
@@ -482,109 +548,155 @@ IsCarrierEnabled <- function(device, channel) {
 #' @return
 #'   Invisibly returns \code{NULL}.
 #'
-#' @name SetCarrier
+#' @name SetAnalogOutCarrier
 #==============================================================================#
 NULL
 
 
-#' @rdname SetCarrier
+#' @rdname SetAnalogOutCarrier
 #' @description
-#'   \code{SetCarrierFunction()} sets the waveform function of the carrier node.
+#'   \code{SetAnalogOutCarrierFunction()} sets the waveform function of the
+#'   carrier node.
 #' @export
-SetCarrierFunction <- function(device, channel, func) {
+SetAnalogOutCarrierFunction <- function(
+    device,
+    channel,
+    func,
+    .validate_analog_out = TRUE
+) {
   .SetAnalogOutFunction(
     device  = device,
     channel = channel,
     node    = "carrier",
-    func    = func
+    func    = func,
+    .validate_analog_out = .validate_analog_out
   )
+  return(invisible(NULL))
 }
 
 
-#' @rdname SetCarrier
+#' @rdname SetAnalogOutCarrier
 #' @description
-#'   \code{SetCarrierFrequency()} sets the frequency of the carrier node.
+#'   \code{SetAnalogOutCarrierFrequency()} sets the frequency of the carrier
+#'   node.
 #' @export
-SetCarrierFrequency <- function(device, channel, frequency) {
+SetAnalogOutCarrierFrequency <- function(
+    device,
+    channel,
+    frequency,
+    .validate_analog_out = TRUE
+) {
   .SetAnalogOutValue(
     device  = device,
     channel = channel,
     node    = "carrier",
     param   = "frequency",
-    value   = frequency
+    value   = frequency,
+    .validate_analog_out = .validate_analog_out
   )
+  return(invisible(NULL))
 }
 
 
-#' @rdname SetCarrier
+#' @rdname SetAnalogOutCarrier
 #' @description
-#'   \code{SetCarrierAmplitude()} sets the amplitude of the carrier node.
+#'   \code{SetAnalogOutCarrierAmplitude()} sets the amplitude of the carrier
+#'   node.
 #' @export
-SetCarrierAmplitude <- function(device, channel, amplitude) {
+SetAnalogOutCarrierAmplitude <- function(
+    device,
+    channel,
+    amplitude,
+    .validate_analog_out = TRUE
+) {
   .SetAnalogOutValue(
     device  = device,
     channel = channel,
     node    = "carrier",
     param   = "amplitude",
-    value   = amplitude
+    value   = amplitude,
+    .validate_analog_out = .validate_analog_out
   )
+  return(invisible(NULL))
 }
 
 
-#' @rdname SetCarrier
+#' @rdname SetAnalogOutCarrier
 #' @description
-#'   \code{SetCarrierOffset()} sets the offset of the carrier node.
+#'   \code{SetAnalogOutCarrierOffset()} sets the offset of the carrier node.
 #' @export
-SetCarrierOffset <- function(device, channel, offset) {
+SetAnalogOutCarrierOffset <- function(
+    device,
+    channel,
+    offset,
+    .validate_analog_out = TRUE
+) {
   .SetAnalogOutValue(
     device  = device,
     channel = channel,
     node    = "carrier",
     param   = "offset",
-    value   = offset
+    value   = offset,
+    .validate_analog_out = .validate_analog_out
   )
+  return(invisible(NULL))
 }
 
 
-#' @rdname SetCarrier
+#' @rdname SetAnalogOutCarrier
 #' @description
-#'   \code{SetCarrierSymmetry()} sets the symmetry of the carrier node.
+#'   \code{SetAnalogOutCarrierSymmetry()} sets the symmetry of the carrier node.
 #' @export
-SetCarrierSymmetry <- function(device, channel, symmetry) {
+SetAnalogOutCarrierSymmetry <- function(
+    device,
+    channel,
+    symmetry,
+    .validate_analog_out = TRUE
+) {
   .SetAnalogOutValue(
     device  = device,
     channel = channel,
     node    = "carrier",
     param   = "symmetry",
-    value   = symmetry
+    value   = symmetry,
+    .validate_analog_out = .validate_analog_out
   )
+  return(invisible(NULL))
 }
 
 
-#' @rdname SetCarrier
+#' @rdname SetAnalogOutCarrier
 #' @description
-#'   \code{SetCarrierPhase()} sets the phase (in degrees) of the carrier node.
+#'   \code{SetAnalogOutCarrierPhase()} sets the phase (in degrees) of the
+#'   carrier node.
 #' @export
-SetCarrierPhase <- function(device, channel, phase) {
+SetAnalogOutCarrierPhase <- function(
+    device,
+    channel,
+    phase,
+    .validate_analog_out = TRUE
+) {
   .SetAnalogOutValue(
     device  = device,
     channel = channel,
     node    = "carrier",
     param   = "phase",
-    value   = phase
+    value   = phase,
+    .validate_analog_out = .validate_analog_out
   )
+  return(invisible(NULL))
 }
 
 
-#' @rdname SetCarrier
+#' @rdname SetAnalogOutCarrier
 #' @description
-#'   \code{SetCarrier()} sets one or more parameters of the carrier node for an
-#'   Analog Out channel. Carrier parameters are updated sequentially. If an
-#'   error occurs, parameters set before the error remain in the pending
-#'   configuration but are not applied until \code{ApplyAnalogOutSettings()} or
-#'   \code{StartAnalogOut()} is called.
+#'   \code{SetAnalogOutCarrier()} sets one or more parameters of the carrier
+#'   node for an Analog Out channel. Carrier parameters are updated
+#'   sequentially. If an error occurs, parameters set before the error remain in
+#'   the pending configuration but are not applied until
+#'   \code{ApplyAnalogOutSettings()} or \code{StartAnalogOut()} is called.
 #' @export
-SetCarrier <- function(
+SetAnalogOutCarrier <- function(
     device,
     channel,
     func = NULL,
@@ -592,7 +704,8 @@ SetCarrier <- function(
     amplitude = NULL,
     offset = NULL,
     symmetry = NULL,
-    phase = NULL
+    phase = NULL,
+    .validate_analog_out = TRUE
 ) {
   if (all(
     is.null(func),
@@ -604,69 +717,73 @@ SetCarrier <- function(
   )) {
     stop("At least one carrier parameter must be specified.", call. = FALSE)
   }
-  if (!is.null(func)) {
-    .AssertAnalogOut(device, channel = channel, node = "carrier", func = func)
-  } else {
-    .AssertAnalogOut(device, channel = channel, node = "carrier")
+
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    if (!is.null(func)) {
+      .AssertAnalogOut(device, channel = channel, node = "carrier", func = func)
+    } else {
+      .AssertAnalogOut(device, channel = channel, node = "carrier")
+    }
   }
 
   if (!is.null(func)) {
     .SetAnalogOutFunction(
-      device   = device,
-      channel  = channel,
-      node     = "carrier",
-      func     = func,
-      validate = FALSE
+      device  = device,
+      channel = channel,
+      node    = "carrier",
+      func    = func,
+      .validate_analog_out = FALSE
     )
   }
   if (!is.null(frequency)) {
     .SetAnalogOutValue(
-      device   = device,
-      channel  = channel,
-      node     = "carrier",
-      param    = "frequency",
-      value    = frequency,
-      validate = FALSE
+      device  = device,
+      channel = channel,
+      node    = "carrier",
+      param   = "frequency",
+      value   = frequency,
+      .validate_analog_out = FALSE
     )
   }
   if (!is.null(amplitude)) {
     .SetAnalogOutValue(
-      device   = device,
-      channel  = channel,
-      node     = "carrier",
-      param    = "amplitude",
-      value    = amplitude,
-      validate = FALSE
+      device  = device,
+      channel = channel,
+      node    = "carrier",
+      param   = "amplitude",
+      value   = amplitude,
+      .validate_analog_out = FALSE
     )
   }
   if (!is.null(offset)) {
     .SetAnalogOutValue(
-      device   = device,
-      channel  = channel,
-      node     = "carrier",
-      param    = "offset",
-      value    = offset,
-      validate = FALSE
+      device  = device,
+      channel = channel,
+      node    = "carrier",
+      param   = "offset",
+      value   = offset,
+      .validate_analog_out = FALSE
     )
   }
   if (!is.null(symmetry)) {
     .SetAnalogOutValue(
-      device   = device,
-      channel  = channel,
-      node     = "carrier",
-      param    = "symmetry",
-      value    = symmetry,
-      validate = FALSE
+      device  = device,
+      channel = channel,
+      node    = "carrier",
+      param   = "symmetry",
+      value   = symmetry,
+      .validate_analog_out = FALSE
     )
   }
   if (!is.null(phase)) {
     .SetAnalogOutValue(
-      device   = device,
-      channel  = channel,
-      node     = "carrier",
-      param    = "phase",
-      value    = phase,
-      validate = FALSE
+      device  = device,
+      channel = channel,
+      node    = "carrier",
+      param   = "phase",
+      value   = phase,
+      .validate_analog_out = FALSE
     )
   }
   return(invisible(NULL))
@@ -687,10 +804,8 @@ SetCarrier <- function(
 #'   A zero-based Analog Out channel index.
 #' @param node
 #'   A string specifying the Analog Out node.
-#' @param validate
-#'   A logical scalar indicating whether \code{device}, \code{channel}, and
-#'   \code{node} should be validated. Set to \code{FALSE} only when these
-#'   arguments have already been validated by the calling function.
+#' @param .validate_analog_out
+#'   Whether to validate the device using \code{.AssertAnalogOut()}.
 #'
 #' @return
 #'   A string identifying the configured waveform function.
@@ -699,9 +814,14 @@ SetCarrier <- function(
 #'
 #' @noRd
 #==============================================================================#
-.GetAnalogOutFunction <- function(device, channel, node, validate = TRUE) {
-  checkmate::assertFlag(validate)
-  if (validate) {
+.GetAnalogOutFunction <- function(
+    device,
+    channel,
+    node,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
     .AssertAnalogOut(device, channel = channel, node = node)
   }
   function_code <- .AnalogOutNodeFunctionGetC(
@@ -726,6 +846,7 @@ SetCarrier <- function(
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
@@ -737,11 +858,16 @@ SetCarrier <- function(
 #'
 #' @export
 #==============================================================================#
-GetCarrierFunction <- function(device, channel) {
+GetAnalogOutCarrierFunction <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
   return(.GetAnalogOutFunction(
     device = device,
     channel = channel,
-    node = "carrier"
+    node = "carrier",
+    .validate_analog_out = .validate_analog_out
   ))
 }
 
@@ -759,10 +885,8 @@ GetCarrierFunction <- function(device, channel) {
 #' @param param
 #'   A string specifying the Analog Out parameter: \code{"frequency"},
 #'   \code{"amplitude"}, \code{"offset"}, \code{"symmetry"}, or \code{"phase"}.
-#' @param validate
-#'   A logical scalar indicating whether \code{device}, \code{channel}, and
-#'   \code{node} should be validated. Set to \code{FALSE} only when these
-#'   arguments have already been validated by the calling function.
+#' @param .validate_analog_out
+#'   Whether to validate the device using \code{.AssertAnalogOut()}.
 #'
 #' @return
 #'   A numeric scalar containing the configured parameter value.
@@ -772,12 +896,18 @@ GetCarrierFunction <- function(device, channel) {
 #'
 #' @noRd
 #==============================================================================#
-.GetAnalogOutValue <- function(device, channel, node, param, validate = TRUE) {
+.GetAnalogOutValue <- function(
+    device,
+    channel,
+    node,
+    param,
+    .validate_analog_out = TRUE
+) {
 
   #--[ Check input arguments ]--------------------------------------------------
 
-  checkmate::assertFlag(validate)
-  if (validate) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
     .AssertAnalogOut(device, channel = channel, node = node)
   }
   checkmate::assertChoice(
@@ -815,6 +945,7 @@ GetCarrierFunction <- function(device, channel) {
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @details
 #'   The functions return values reported by the corresponding WaveForms SDK
@@ -829,80 +960,107 @@ GetCarrierFunction <- function(device, channel) {
 #' @return
 #'   A numeric scalar containing the requested carrier parameter.
 #'
-#' @name GetCarrierValues
+#' @name GetAnalogOutCarrierValues
 #==============================================================================#
 NULL
 
 
-#' @rdname GetCarrierValues
+#' @rdname GetAnalogOutCarrierValues
 #' @description
-#'   \code{GetCarrierFrequency()} returns the configured carrier frequency in
-#'   Hz.
+#'   \code{GetAnalogOutCarrierFrequency()} returns the configured carrier
+#'   frequency in Hz.
 #' @export
-GetCarrierFrequency <- function(device, channel) {
+GetAnalogOutCarrierFrequency <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
   return(.GetAnalogOutValue(
     device = device,
     channel = channel,
     node = "carrier",
-    param = "frequency"
+    param = "frequency",
+    .validate_analog_out = .validate_analog_out
   ))
 }
 
 
-#' @rdname GetCarrierValues
+#' @rdname GetAnalogOutCarrierValues
 #' @description
-#'   \code{GetCarrierAmplitude()} returns the configured carrier peak amplitude
-#'   in volts relative to the configured offset.
+#'   \code{GetAnalogOutCarrierAmplitude()} returns the configured carrier peak
+#'   amplitude in volts relative to the configured offset.
 #' @export
-GetCarrierAmplitude <- function(device, channel) {
+GetAnalogOutCarrierAmplitude <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
   return(.GetAnalogOutValue(
     device = device,
     channel = channel,
     node = "carrier",
-    param = "amplitude"
+    param = "amplitude",
+    .validate_analog_out = .validate_analog_out
   ))
 }
 
 
-#' @rdname GetCarrierValues
+#' @rdname GetAnalogOutCarrierValues
 #' @description
-#'   \code{GetCarrierOffset()} returns the configured carrier offset in volts.
+#'   \code{GetAnalogOutCarrierOffset()} returns the configured carrier offset in
+#'   volts.
 #' @export
-GetCarrierOffset <- function(device, channel) {
+GetAnalogOutCarrierOffset <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
   return(.GetAnalogOutValue(
     device = device,
     channel = channel,
     node = "carrier",
-    param = "offset"
+    param = "offset",
+    .validate_analog_out = .validate_analog_out
   ))
 }
 
 
-#' @rdname GetCarrierValues
+#' @rdname GetAnalogOutCarrierValues
 #' @description
-#'   \code{GetCarrierSymmetry()} returns the configured carrier symmetry in
-#'   percent.
+#'   \code{GetAnalogOutCarrierSymmetry()} returns the configured carrier
+#'   symmetry in percent.
 #' @export
-GetCarrierSymmetry <- function(device, channel) {
+GetAnalogOutCarrierSymmetry <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
   return(.GetAnalogOutValue(
     device = device,
     channel = channel,
     node = "carrier",
-    param = "symmetry"
+    param = "symmetry",
+    .validate_analog_out = .validate_analog_out
   ))
 }
 
 
-#' @rdname GetCarrierValues
+#' @rdname GetAnalogOutCarrierValues
 #' @description
-#'   \code{GetCarrierPhase()} returns the configured carrier phase in degrees.
+#'   \code{GetAnalogOutCarrierPhase()} returns the configured carrier phase in
+#'   degrees.
 #' @export
-GetCarrierPhase <- function(device, channel) {
+GetAnalogOutCarrierPhase <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
   return(.GetAnalogOutValue(
     device = device,
     channel = channel,
     node = "carrier",
-    param = "phase"
+    param = "phase",
+    .validate_analog_out = .validate_analog_out
   ))
 }
 
@@ -917,6 +1075,7 @@ GetCarrierPhase <- function(device, channel) {
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
@@ -951,55 +1110,62 @@ GetCarrierPhase <- function(device, channel) {
 #'
 #' @export
 #==============================================================================#
-GetCarrierSettings <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel, node = "carrier")
+GetAnalogOutCarrierSettings <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel, node = "carrier")
+  }
 
-  # TODO: '.AssertAnalogOut()' is additionally called in 'IsCarrierEnabled()'
   out <- list(
-    enabled = IsCarrierEnabled(
+    enabled = IsAnalogOutCarrierEnabled(
       device = device,
-      channel = channel
+      channel = channel,
+      .validate_analog_out = FALSE
     ),
     func = .GetAnalogOutFunction(
       device = device,
       channel = channel,
       node = "carrier",
-      validate = FALSE
+      .validate_analog_out = FALSE
     ),
     frequency = .GetAnalogOutValue(
       device = device,
       channel = channel,
       node = "carrier",
       param = "frequency",
-      validate = FALSE
+      .validate_analog_out = FALSE
     ),
     amplitude = .GetAnalogOutValue(
       device = device,
       channel = channel,
       node = "carrier",
       param = "amplitude",
-      validate = FALSE
+      .validate_analog_out = FALSE
     ),
     offset = .GetAnalogOutValue(
       device = device,
       channel = channel,
       node = "carrier",
       param = "offset",
-      validate = FALSE
+      .validate_analog_out = FALSE
     ),
     symmetry = .GetAnalogOutValue(
       device = device,
       channel = channel,
       node = "carrier",
       param = "symmetry",
-      validate = FALSE
+      .validate_analog_out = FALSE
     ),
     phase = .GetAnalogOutValue(
       device = device,
       channel = channel,
       node = "carrier",
       param = "phase",
-      validate = FALSE
+      .validate_analog_out = FALSE
     )
   )
   return(out)
@@ -1010,12 +1176,17 @@ GetCarrierSettings <- function(device, channel) {
 #==============================================================================#
 #' Upload custom Analog Out data
 #'
-#' @template arg_device
-#' @template arg_analog_out_channel
-#' @template arg_node
+#' @param device
+#'   A \code{"dwf4r_device"} object.
+#' @param channel
+#'   A zero-based Analog Out channel index.
+#' @param node
+#'   A string specifying the Analog Out node.
 #' @param data
 #'   A numeric vector of waveform samples normalized to the range
 #'   \code{[-1, 1]}.
+#' @param .validate_analog_out
+#'   Whether to validate the device using \code{.AssertAnalogOut()}.
 #'
 #' @return
 #'   Invisibly returns \code{NULL}.
@@ -1024,11 +1195,20 @@ GetCarrierSettings <- function(device, channel) {
 #'
 #' @noRd
 #==============================================================================#
-.SetAnalogOutData <- function(device, channel, node, data) {
+.SetAnalogOutData <- function(
+    device,
+    channel,
+    node,
+    data,
+    .validate_analog_out = TRUE
+) {
 
   #--[ Check input arguments ]--------------------------------------------------
 
-  .AssertAnalogOut(device, channel = channel, node = node)
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel, node = node)
+  }
   checkmate::assertNumeric(
     data,
     any.missing = FALSE,
@@ -1037,8 +1217,12 @@ GetCarrierSettings <- function(device, channel) {
     min.len = 1L
   )
 
-  value_range <-
-    GetAnalogOutNodeSampleCountRange(device, channel = channel, node = node)
+  value_range <- GetAnalogOutNodeSampleCountRange(
+    device,
+    channel = channel,
+    node = node,
+    .validate_analog_out = FALSE
+  )
   if (length(data) < value_range[[1L]] || length(data) > value_range[[2L]]) {
     stop_msg <- sprintf(
       "Length of 'data' (%d) is out of supported range [%d, %d].",
@@ -1069,8 +1253,8 @@ GetCarrierSettings <- function(device, channel) {
 #'   channel. Samples must be normalized to the range \code{[-1, 1]}.
 #'
 #'   This function uploads sample data but does not select the custom waveform
-#'   function or start generation. Use \code{SetCarrierFunction(..., func =
-#'   "custom")} and then call \code{ApplyAnalogOutSettings()} or
+#'   function or start generation. Use \code{SetAnalogOutCarrierFunction(...,
+#'   func = "custom")} and then call \code{ApplyAnalogOutSettings()} or
 #'   \code{StartAnalogOut()}.
 #'
 #' @template arg_device
@@ -1078,6 +1262,7 @@ GetCarrierSettings <- function(device, channel) {
 #' @param data
 #'   A numeric vector of waveform samples normalized to the range
 #'   \code{[-1, 1]}.
+#' @template arg_validate_analog_out
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
@@ -1088,13 +1273,20 @@ GetCarrierSettings <- function(device, channel) {
 #'
 #' @export
 #==============================================================================#
-SetCarrierData <- function(device, channel, data) {
+SetAnalogOutCarrierData <- function(
+    device,
+    channel,
+    data,
+    .validate_analog_out = TRUE
+) {
   .SetAnalogOutData(
     device = device,
     channel = channel,
     node = "carrier",
-    data = data
+    data = data,
+    .validate_analog_out = .validate_analog_out
   )
+  return(invisible(NULL))
 }
 
 
@@ -1114,10 +1306,11 @@ SetCarrierData <- function(device, channel, data) {
 #' @param idle
 #'   A string specifying the idle output mode. Supported values are
 #'   \code{"disable"}, \code{"offset"}, \code{"initial"}, and \code{"hold"}.
+#' @template arg_validate_analog_out
 #'
 #' @details
 #'   The \code{"offset"} mode uses the configured offset level. Use
-#'   \code{SetCarrierOffset()} to set that voltage level. If device
+#'   \code{SetAnalogOutCarrierOffset()} to set that voltage level. If device
 #'   auto-configuration is disabled, call \code{ApplyAnalogOutSettings()} or
 #'   \code{StartAnalogOut()} after changing Analog Out settings.
 #'
@@ -1132,12 +1325,24 @@ SetCarrierData <- function(device, channel, data) {
 #'
 #' @export
 #==============================================================================#
-SetAnalogOutIdle <- function(device, channel, idle) {
+SetAnalogOutIdle <- function(
+    device,
+    channel,
+    idle,
+    .validate_analog_out = TRUE
+) {
 
   #--[ Check input arguments ]--------------------------------------------------
 
-  .AssertAnalogOut(device, channel = channel)
-  supported_idle_modes <- GetAnalogOutIdleModes(device, channel)
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
+  supported_idle_modes <- GetAnalogOutIdleModes(
+    device,
+    channel,
+    .validate_analog_out = FALSE
+  )
   if (!checkmate::testChoice(idle, supported_idle_modes)) {
     stop_msg <- sprintf("Idle mode '%s' is not supported for channel %d.",
                         idle, channel)
@@ -1170,6 +1375,7 @@ SetAnalogOutIdle <- function(device, channel, idle) {
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
@@ -1181,8 +1387,11 @@ SetAnalogOutIdle <- function(device, channel, idle) {
 #'
 #' @export
 #==============================================================================#
-GetAnalogOutIdle <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
+GetAnalogOutIdle <- function(device, channel, .validate_analog_out = TRUE) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
   idle_code <- .AnalogOutIdleGetC(
     handle = device$device_handle,
     channel = as.integer(channel)
@@ -1207,14 +1416,12 @@ GetAnalogOutIdle <- function(device, channel) {
 #' @param channel
 #'   A zero-based Analog Out channel index.
 #' @param param
-#'   A string specifying the timing parameter: \code{"run"}, \code{"wait"}, or
-#'   \code{"repeat"}.
+#'   A string specifying the timing parameter: \code{"run_time"},
+#'   \code{"wait_time"}, or \code{"repeat_count"}.
 #' @param value
 #'   A numeric or integer scalar containing the value to set.
-#' @param validate
-#'   A logical scalar indicating whether \code{device} and \code{channel}
-#'   should be validated. Set to \code{FALSE} only when these arguments have
-#'   already been validated by the calling function.
+#' @param .validate_analog_out
+#'   Whether to validate the device using \code{.AssertAnalogOut()}.
 #'
 #' @return
 #'   Invisibly returns \code{NULL}.
@@ -1231,13 +1438,13 @@ GetAnalogOutIdle <- function(device, channel) {
     channel,
     param,
     value,
-    validate = TRUE
+    .validate_analog_out = TRUE
 ) {
 
   #--[ Check input arguments ]--------------------------------------------------
 
-  checkmate::assertFlag(validate)
-  if (validate) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
     .AssertAnalogOut(device, channel = channel)
   }
 
@@ -1336,6 +1543,7 @@ GetAnalogOutIdle <- function(device, channel) {
 #' @param repeat_count
 #'   An integer scalar specifying the repeat count. A value of \code{0}
 #'   requests infinite repetition.
+#' @template arg_validate_analog_out
 #'
 #' @details
 #'   These functions update the pending Analog Out configuration. Because
@@ -1367,12 +1575,18 @@ NULL
 #'   \code{SetAnalogOutRun()} sets the run length of an Analog Out channel.
 #'
 #' @export
-SetAnalogOutRun <- function(device, channel, run_time) {
+SetAnalogOutRun <- function(
+    device,
+    channel,
+    run_time,
+    .validate_analog_out = TRUE
+) {
   .SetAnalogOutTimingValue(
     device = device,
     channel = channel,
     param = "run_time",
-    value = run_time
+    value = run_time,
+    .validate_analog_out = .validate_analog_out
   )
   return(invisible(NULL))
 }
@@ -1384,12 +1598,18 @@ SetAnalogOutRun <- function(device, channel, run_time) {
 #'   beginning signal generation.
 #'
 #' @export
-SetAnalogOutWait <- function(device, channel, wait_time) {
+SetAnalogOutWait <- function(
+    device,
+    channel,
+    wait_time,
+    .validate_analog_out = TRUE
+) {
   .SetAnalogOutTimingValue(
     device = device,
     channel = channel,
     param = "wait_time",
-    value = wait_time
+    value = wait_time,
+    .validate_analog_out = .validate_analog_out
   )
   return(invisible(NULL))
 }
@@ -1401,12 +1621,18 @@ SetAnalogOutWait <- function(device, channel, wait_time) {
 #'   channel.
 #'
 #' @export
-SetAnalogOutRepeat <- function(device, channel, repeat_count) {
+SetAnalogOutRepeat <- function(
+    device,
+    channel,
+    repeat_count,
+    .validate_analog_out = TRUE
+) {
   .SetAnalogOutTimingValue(
     device = device,
     channel = channel,
     param = "repeat_count",
-    value = repeat_count
+    value = repeat_count,
+    .validate_analog_out = .validate_analog_out
   )
   return(invisible(NULL))
 }
@@ -1423,7 +1649,8 @@ SetAnalogOutTiming <- function(
     channel,
     run_time = NULL,
     wait_time = NULL,
-    repeat_count = NULL
+    repeat_count = NULL,
+    .validate_analog_out = TRUE
 ) {
   if (all(
     is.null(run_time),
@@ -1436,7 +1663,10 @@ SetAnalogOutTiming <- function(
     )
   }
 
-  .AssertAnalogOut(device, channel = channel)
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
 
   if (!is.null(run_time)) {
     .SetAnalogOutTimingValue(
@@ -1444,7 +1674,7 @@ SetAnalogOutTiming <- function(
       channel = channel,
       param = "run_time",
       value = run_time,
-      validate = FALSE
+      .validate_analog_out = FALSE
     )
   }
 
@@ -1454,7 +1684,7 @@ SetAnalogOutTiming <- function(
       channel = channel,
       param = "wait_time",
       value = wait_time,
-      validate = FALSE
+      .validate_analog_out = FALSE
     )
   }
 
@@ -1464,7 +1694,7 @@ SetAnalogOutTiming <- function(
       channel = channel,
       param = "repeat_count",
       value = repeat_count,
-      validate = FALSE
+      .validate_analog_out = FALSE
     )
   }
 
@@ -1486,10 +1716,8 @@ SetAnalogOutTiming <- function(
 #' @param param
 #'   A string specifying the timing parameter: \code{"run_time"},
 #'   \code{"wait_time"}, or \code{"repeat_count"}.
-#' @param validate
-#'   A logical scalar indicating whether \code{device} and \code{channel} should
-#'   be validated. Set to \code{FALSE} only when these arguments have already
-#'   been validated by the calling function.
+#' @param .validate_analog_out
+#'   Whether to validate the device using \code{.AssertAnalogOut()}.
 #'
 #' @return
 #'   A numeric or integer scalar containing the configured timing parameter.
@@ -1503,13 +1731,13 @@ SetAnalogOutTiming <- function(
     device,
     channel,
     param,
-    validate = TRUE
+    .validate_analog_out = TRUE
 ) {
 
   #--[ Check input arguments ]--------------------------------------------------
 
-  checkmate::assertFlag(validate)
-  if (validate) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
     .AssertAnalogOut(device, channel = channel)
   }
 
@@ -1542,6 +1770,7 @@ SetAnalogOutTiming <- function(
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @details
 #'   These functions retrieve the configured timing values reported by the
@@ -1582,11 +1811,12 @@ NULL
 #'   channel.
 #'
 #' @export
-GetAnalogOutRun <- function(device, channel) {
+GetAnalogOutRun <- function(device, channel, .validate_analog_out = TRUE) {
   return(.GetAnalogOutTimingValue(
     device = device,
     channel = channel,
-    param = "run_time"
+    param = "run_time",
+    .validate_analog_out = .validate_analog_out
   ))
 }
 
@@ -1597,11 +1827,12 @@ GetAnalogOutRun <- function(device, channel) {
 #'   trigger and beginning signal generation.
 #'
 #' @export
-GetAnalogOutWait <- function(device, channel) {
+GetAnalogOutWait <- function(device, channel, .validate_analog_out = TRUE) {
   return(.GetAnalogOutTimingValue(
     device = device,
     channel = channel,
-    param = "wait_time"
+    param = "wait_time",
+    .validate_analog_out = .validate_analog_out
   ))
 }
 
@@ -1612,11 +1843,12 @@ GetAnalogOutWait <- function(device, channel) {
 #'   Analog Out channel.
 #'
 #' @export
-GetAnalogOutRepeat <- function(device, channel) {
+GetAnalogOutRepeat <- function(device, channel, .validate_analog_out = TRUE) {
   return(.GetAnalogOutTimingValue(
     device = device,
     channel = channel,
-    param = "repeat_count"
+    param = "repeat_count",
+    .validate_analog_out = .validate_analog_out
   ))
 }
 
@@ -1627,27 +1859,30 @@ GetAnalogOutRepeat <- function(device, channel) {
 #'   Analog Out channel.
 #'
 #' @export
-GetAnalogOutTiming <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
+GetAnalogOutTiming <- function(device, channel, .validate_analog_out = TRUE) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
 
   out <- list(
     run_time = .GetAnalogOutTimingValue(
       device = device,
       channel = channel,
       param = "run_time",
-      validate = FALSE
+      .validate_analog_out = FALSE
     ),
     wait_time = .GetAnalogOutTimingValue(
       device = device,
       channel = channel,
       param = "wait_time",
-      validate = FALSE
+      .validate_analog_out = FALSE
     ),
     repeat_count = .GetAnalogOutTimingValue(
       device = device,
       channel = channel,
       param = "repeat_count",
-      validate = FALSE
+      .validate_analog_out = FALSE
     )
   )
 
@@ -1675,10 +1910,8 @@ GetAnalogOutTiming <- function(device, channel) {
 #' @param update
 #'   A logical scalar indicating whether the Analog Out status should be updated
 #'   before retrieving the remaining value.
-#' @param validate
-#'   A logical scalar indicating whether \code{device} and \code{channel} should
-#'   be validated. Set to \code{FALSE} only when these arguments have already
-#'   been validated by the calling function.
+#' @param .validate_analog_out
+#'   Whether to validate the device using \code{.AssertAnalogOut()}.
 #'
 #' @return
 #'   A numeric or integer scalar containing the requested remaining value.
@@ -1693,13 +1926,13 @@ GetAnalogOutTiming <- function(device, channel) {
     channel,
     param,
     update = TRUE,
-    validate = TRUE
+    .validate_analog_out = TRUE
 ) {
 
   #--[ Check input arguments ]--------------------------------------------------
 
-  checkmate::assertFlag(validate)
-  if (validate) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
     .AssertAnalogOut(device, channel = channel)
   }
 
@@ -1748,6 +1981,7 @@ GetAnalogOutTiming <- function(device, channel) {
 #'   before retrieving the remaining value. The default is \code{TRUE}. If
 #'   \code{FALSE}, the value from the most recent Analog Out status update
 #'   (performed with \code{GetAnalogOutStatus()}) is returned.
+#' @template arg_validate_analog_out
 #'
 #' @details
 #'   The WaveForms SDK functions used to retrieve the remaining run time and
@@ -1785,12 +2019,18 @@ NULL
 #'   Analog Out channel.
 #'
 #' @export
-GetAnalogOutRemainingRun <- function(device, channel, update = TRUE) {
+GetAnalogOutRemainingRun <- function(
+    device,
+    channel,
+    update = TRUE,
+    .validate_analog_out = TRUE
+) {
   return(.GetAnalogOutRemainingValue(
     device = device,
     channel = channel,
     param = "run_time",
-    update = update
+    update = update,
+    .validate_analog_out = .validate_analog_out
   ))
 }
 
@@ -1801,12 +2041,18 @@ GetAnalogOutRemainingRun <- function(device, channel, update = TRUE) {
 #'   an Analog Out channel.
 #'
 #' @export
-GetAnalogOutRemainingRepeat <- function(device, channel, update = TRUE) {
+GetAnalogOutRemainingRepeat <- function(
+    device,
+    channel,
+    update = TRUE,
+    .validate_analog_out = TRUE
+) {
   return(.GetAnalogOutRemainingValue(
     device = device,
     channel = channel,
     param = "repeat_count",
-    update = update
+    update = update,
+    .validate_analog_out = .validate_analog_out
   ))
 }
 
@@ -1828,6 +2074,7 @@ GetAnalogOutRemainingRepeat <- function(device, channel, update = TRUE) {
 #'   \code{"external_1"}, and \code{"external_2"}. This list is not exhaustive;
 #'   available sources depend on the selected device and can be queried with
 #'   \code{GetDeviceTriggerSources()}.
+#' @template arg_validate_analog_out
 #'
 #' @details
 #'   This function updates the pending Analog Out configuration. Because
@@ -1843,12 +2090,23 @@ GetAnalogOutRemainingRepeat <- function(device, channel, update = TRUE) {
 #'
 #' @export
 #==============================================================================#
-SetAnalogOutTriggerSource <- function(device, channel, source) {
+SetAnalogOutTriggerSource <- function(
+    device,
+    channel,
+    source,
+    .validate_analog_out = TRUE
+) {
 
   #--[ Check input arguments ]--------------------------------------------------
 
-  .AssertAnalogOut(device, channel = channel)
-  supported_sources <- GetDeviceTriggerSources(device)
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
+  supported_sources <- GetDeviceTriggerSources(
+    device,
+    .validate_device = FALSE
+  )
   if (!checkmate::testChoice(source, supported_sources)) {
     stop_msg <- sprintf(
       "Trigger source '%s' is not supported by the device.",
@@ -1880,14 +2138,22 @@ SetAnalogOutTriggerSource <- function(device, channel, source) {
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @return
 #'   A string identifying the configured trigger source.
 #'
 #' @export
 #==============================================================================#
-GetAnalogOutTriggerSource <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
+GetAnalogOutTriggerSource <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
 
   source_code <- .AnalogOutTriggerSourceGetC(
     handle = device$device_handle,
@@ -1914,6 +2180,7 @@ GetAnalogOutTriggerSource <- function(device, channel) {
 #' @param slope
 #'   A string specifying the trigger slope. Recognized values are
 #'   \code{"rising"}, \code{"falling"}, and \code{"either"}.
+#' @template arg_validate_analog_out
 #'
 #' @details
 #'   This function updates the pending Analog Out configuration. Because
@@ -1929,12 +2196,20 @@ GetAnalogOutTriggerSource <- function(device, channel) {
 #'
 #' @export
 #==============================================================================#
-SetAnalogOutTriggerSlope <- function(device, channel, slope) {
+SetAnalogOutTriggerSlope <- function(
+    device,
+    channel,
+    slope,
+    .validate_analog_out = TRUE
+) {
 
   #--[ Check input arguments ]--------------------------------------------------
 
-  .AssertAnalogOut(device, channel = channel)
-  supported_slopes <- GetDeviceTriggerSlopes(device)
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
+  supported_slopes <- GetDeviceTriggerSlopes(device, .validate_device = FALSE)
   if (!checkmate::testChoice(slope, supported_slopes)) {
     stop_msg <- sprintf(
       "Trigger slope '%s' is not supported by the device.",
@@ -1966,14 +2241,22 @@ SetAnalogOutTriggerSlope <- function(device, channel, slope) {
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @return
 #'   A string identifying the configured trigger slope.
 #'
 #' @export
 #==============================================================================#
-GetAnalogOutTriggerSlope <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
+GetAnalogOutTriggerSlope <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
 
   slope_code <- .AnalogOutTriggerSlopeGetC(
     handle = device$device_handle,
@@ -2002,6 +2285,7 @@ GetAnalogOutTriggerSlope <- function(device, channel) {
 #'   A logical scalar. If \code{TRUE}, a new trigger is included in each
 #'   wait-run repeat cycle. If \code{FALSE}, repeated cycles proceed without
 #'   waiting for another trigger.
+#' @template arg_validate_analog_out
 #'
 #' @details
 #'   This setting controls trigger behavior during repetition and does not
@@ -2024,12 +2308,16 @@ GetAnalogOutTriggerSlope <- function(device, channel) {
 SetAnalogOutRepeatTrigger <- function(
     device,
     channel,
-    repeat_trigger
+    repeat_trigger,
+    .validate_analog_out = TRUE
 ) {
 
   #--[ Check input arguments ]--------------------------------------------------
 
-  .AssertAnalogOut(device, channel = channel)
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
   checkmate::assertFlag(repeat_trigger)
 
 
@@ -2055,6 +2343,7 @@ SetAnalogOutRepeatTrigger <- function(
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @return
 #'   A logical scalar. \code{TRUE} indicates that a new trigger is included in
@@ -2063,8 +2352,15 @@ SetAnalogOutRepeatTrigger <- function(
 #'
 #' @export
 #==============================================================================#
-GetAnalogOutRepeatTrigger <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
+GetAnalogOutRepeatTrigger <- function(
+    device,
+    channel,
+    .validate_analog_out = TRUE
+) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
 
   return(.AnalogOutRepeatTriggerGetC(
     handle = device$device_handle,
@@ -2085,6 +2381,7 @@ GetAnalogOutRepeatTrigger <- function(device, channel) {
 #' @param master_channel
 #'   An integer scalar representing the zero-based Analog Out channel index to
 #'   use as the state-machine master.
+#' @template arg_validate_analog_out
 #'
 #' @details
 #'   A channel whose master differs from itself is controlled by the state
@@ -2115,11 +2412,19 @@ GetAnalogOutRepeatTrigger <- function(device, channel) {
 #'
 #' @export
 #==============================================================================#
-SetAnalogOutMaster <- function(device, channel, master_channel) {
+SetAnalogOutMaster <- function(
+    device,
+    channel,
+    master_channel,
+    .validate_analog_out = TRUE
+) {
 
   #--[ Check input arguments ]--------------------------------------------------
 
-  .AssertAnalogOut(device, channel = channel)
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
   checkmate::assertInt(master_channel, lower = 0L)
 
   channel_count <- .QueryAnalogOutChannelCountC(device$device_handle)
@@ -2154,6 +2459,7 @@ SetAnalogOutMaster <- function(device, channel, master_channel) {
 #'
 #' @template arg_device
 #' @template arg_analog_out_channel
+#' @template arg_validate_analog_out
 #'
 #' @seealso
 #'   See the vignette \emph{Basic Analog Out Functionality} for a complete
@@ -2169,8 +2475,11 @@ SetAnalogOutMaster <- function(device, channel, master_channel) {
 #'
 #' @export
 #==============================================================================#
-GetAnalogOutMaster <- function(device, channel) {
-  .AssertAnalogOut(device, channel = channel)
+GetAnalogOutMaster <- function(device, channel, .validate_analog_out = TRUE) {
+  checkmate::assertFlag(.validate_analog_out)
+  if (.validate_analog_out) {
+    .AssertAnalogOut(device, channel = channel)
+  }
 
   return(.AnalogOutMasterGetC(
     handle = device$device_handle,

@@ -467,15 +467,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// QueryAnalogOutChannelNodes
-Rcpp::CharacterVector QueryAnalogOutChannelNodes(const int handle, const int channel);
-RcppExport SEXP _dwf4r_QueryAnalogOutChannelNodes(SEXP handleSEXP, SEXP channelSEXP) {
+// QueryAnalogOutNodeMask
+int QueryAnalogOutNodeMask(const int handle, const int channel);
+RcppExport SEXP _dwf4r_QueryAnalogOutNodeMask(SEXP handleSEXP, SEXP channelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
     Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
-    rcpp_result_gen = Rcpp::wrap(QueryAnalogOutChannelNodes(handle, channel));
+    rcpp_result_gen = Rcpp::wrap(QueryAnalogOutNodeMask(handle, channel));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -515,28 +515,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// QueryAnalogOutIdleModes
-Rcpp::CharacterVector QueryAnalogOutIdleModes(const int handle, const int channel);
-RcppExport SEXP _dwf4r_QueryAnalogOutIdleModes(SEXP handleSEXP, SEXP channelSEXP) {
+// QueryAnalogOutIdleMask
+int QueryAnalogOutIdleMask(const int handle, const int channel);
+RcppExport SEXP _dwf4r_QueryAnalogOutIdleMask(SEXP handleSEXP, SEXP channelSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
     Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
-    rcpp_result_gen = Rcpp::wrap(QueryAnalogOutIdleModes(handle, channel));
+    rcpp_result_gen = Rcpp::wrap(QueryAnalogOutIdleMask(handle, channel));
     return rcpp_result_gen;
 END_RCPP
 }
-// QueryAnalogOutNodeFunctionTypes
-Rcpp::CharacterVector QueryAnalogOutNodeFunctionTypes(const int handle, const int channel, const int node);
-RcppExport SEXP _dwf4r_QueryAnalogOutNodeFunctionTypes(SEXP handleSEXP, SEXP channelSEXP, SEXP nodeSEXP) {
+// QueryAnalogOutNodeFunctionMask
+int QueryAnalogOutNodeFunctionMask(const int handle, const int channel, const int node);
+RcppExport SEXP _dwf4r_QueryAnalogOutNodeFunctionMask(SEXP handleSEXP, SEXP channelSEXP, SEXP nodeSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const int >::type handle(handleSEXP);
     Rcpp::traits::input_parameter< const int >::type channel(channelSEXP);
     Rcpp::traits::input_parameter< const int >::type node(nodeSEXP);
-    rcpp_result_gen = Rcpp::wrap(QueryAnalogOutNodeFunctionTypes(handle, channel, node));
+    rcpp_result_gen = Rcpp::wrap(QueryAnalogOutNodeFunctionMask(handle, channel, node));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -1262,12 +1262,12 @@ static const R_CallMethodDef CallEntries[] = {
     {"_dwf4r_AnalogOutIdleSet", (DL_FUNC) &_dwf4r_AnalogOutIdleSet, 3},
     {"_dwf4r_AnalogOutIdleGet", (DL_FUNC) &_dwf4r_AnalogOutIdleGet, 2},
     {"_dwf4r_QueryAnalogOutChannelCount", (DL_FUNC) &_dwf4r_QueryAnalogOutChannelCount, 1},
-    {"_dwf4r_QueryAnalogOutChannelNodes", (DL_FUNC) &_dwf4r_QueryAnalogOutChannelNodes, 2},
+    {"_dwf4r_QueryAnalogOutNodeMask", (DL_FUNC) &_dwf4r_QueryAnalogOutNodeMask, 2},
     {"_dwf4r_QueryAnalogOutRunRange", (DL_FUNC) &_dwf4r_QueryAnalogOutRunRange, 2},
     {"_dwf4r_QueryAnalogOutWaitRange", (DL_FUNC) &_dwf4r_QueryAnalogOutWaitRange, 2},
     {"_dwf4r_QueryAnalogOutRepeatRange", (DL_FUNC) &_dwf4r_QueryAnalogOutRepeatRange, 2},
-    {"_dwf4r_QueryAnalogOutIdleModes", (DL_FUNC) &_dwf4r_QueryAnalogOutIdleModes, 2},
-    {"_dwf4r_QueryAnalogOutNodeFunctionTypes", (DL_FUNC) &_dwf4r_QueryAnalogOutNodeFunctionTypes, 3},
+    {"_dwf4r_QueryAnalogOutIdleMask", (DL_FUNC) &_dwf4r_QueryAnalogOutIdleMask, 2},
+    {"_dwf4r_QueryAnalogOutNodeFunctionMask", (DL_FUNC) &_dwf4r_QueryAnalogOutNodeFunctionMask, 3},
     {"_dwf4r_QueryAnalogOutNodeFrequencyRange", (DL_FUNC) &_dwf4r_QueryAnalogOutNodeFrequencyRange, 3},
     {"_dwf4r_QueryAnalogOutNodeAmplitudeRange", (DL_FUNC) &_dwf4r_QueryAnalogOutNodeAmplitudeRange, 3},
     {"_dwf4r_QueryAnalogOutNodeOffsetRange", (DL_FUNC) &_dwf4r_QueryAnalogOutNodeOffsetRange, 3},

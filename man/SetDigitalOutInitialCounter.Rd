@@ -25,14 +25,14 @@ to a device connection that is still open.}
 The supported range can be queried with \code{GetDigitalOutCounterRange()}.
 An initial count of zero is accepted.}
 
-\item{.validate_digital_out}{A logical scalar indicating whether \code{AssertDigitalOut()} should be
-called. This argument is intended for advanced use to avoid repeated
-validation in controlled sequences of operations. Set to \code{FALSE} only
-when the device and relevant Digital Out context, such as the channel and
-supported configuration choices, have already been validated. The caller is
-responsible for ensuring that the device remains open and the validated
-context remains valid. Other argument validation and SDK error handling
-remain active.}
+\item{.validate_digital_out}{A logical scalar indicating whether the device and relevant Digital Out
+context should be validated before the operation. This argument is intended
+for advanced use to avoid repeated validation in controlled sequences of
+operations. Set to \code{FALSE} only when the device and relevant Digital
+Out context, such as the channel and supported configuration choices, have
+already been validated. The caller is responsible for ensuring that the
+device remains open and the validated context remains valid. Other argument
+validation and SDK error handling remain active.}
 }
 \value{
 Invisibly returns \code{NULL}.

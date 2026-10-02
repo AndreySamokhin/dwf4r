@@ -6,7 +6,8 @@
 #'   mapping of names to zero-based SDK codes.
 #'
 #' @param mask
-#'   An integer scalar containing an SDK capability bitmask.
+#'   An integer scalar containing a 32-bit SDK capability mask. The value is
+#'   interpreted as a bit pattern rather than as a signed integer.
 #' @param code_map
 #'   A named list mapping user-facing names to zero-based SDK codes.
 #'
@@ -18,7 +19,11 @@
 #==============================================================================#
 .ConvertMaskToNames <- function(mask, code_map) {
   codes <- unlist(code_map, use.names = FALSE)
+
+  # The mask is treated as a 32-bit bit pattern rather than as a numeric value.
+  # In particular, NA_integer_ may represent a valid mask with bit 31 set.
   mask_codes <- which(as.logical(intToBits(mask))) - 1L
+
   is_supported <- codes %in% mask_codes
   return(names(code_map[is_supported]))
 }

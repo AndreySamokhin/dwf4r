@@ -61,12 +61,15 @@ test_that(".AssertAnalogOut()", {
   local_mocked_bindings(
     .QueryAnalogOutChannelCountC = function(handle) {
       return(2L)
+      # stop("CHANNEL COUNT MOCK CALLED", call. = FALSE)
     },
-    .QueryAnalogOutChannelNodesC = function(handle, channel) {
-      return(c("carrier", "fm", "am"))
+    .QueryAnalogOutNodeMaskC = function(handle, channel) {
+      # carrier, fm, am
+      return(7L)
     },
-    .QueryAnalogOutNodeFunctionTypesC = function(handle, channel, node) {
-      return(c("dc", "sine", "square"))
+    .QueryAnalogOutNodeFunctionMaskC = function(handle, channel, node) {
+      # dc, sine, square
+      return(7L)
     },
     .package = "dwf4r"
   )

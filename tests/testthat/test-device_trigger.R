@@ -55,6 +55,16 @@ test_that("Device triggering", {
       handle = 123L
     )
   )
+
+
+  #.. Device-validation bypass .................................................
+
+  the_env$devices <- list()
+  expect_error(
+    TriggerDevice(device),
+    "session that does not exist"
+  )
+  expect_null(TriggerDevice(device, .validate_device = FALSE))
 })
 
 

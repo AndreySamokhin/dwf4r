@@ -72,8 +72,14 @@
     if (is.null(channel)) {
       stop("'node' cannot be specified without 'channel'.", call. = FALSE)
     }
-    supported_nodes <-
-      .QueryAnalogOutChannelNodesC(device$device_handle, as.integer(channel))
+    node_mask <- .QueryAnalogOutNodeMaskC(
+      device$device_handle,
+      as.integer(channel)
+    )
+    supported_nodes <- .ConvertMaskToNames(
+      node_mask,
+      .dwf_constants$analog_out$node_code
+    )
     if (!checkmate::testChoice(node, supported_nodes)) {
       stop_msg <-
         sprintf("Node '%s' is not supported for channel %d.", node, channel)
@@ -89,10 +95,14 @@
     if (is.null(node)) {
       stop("'func' cannot be specified without 'node'.", call. = FALSE)
     }
-    supported_functions <- .QueryAnalogOutNodeFunctionTypesC(
+    function_mask <- .QueryAnalogOutNodeFunctionMaskC(
       device$device_handle,
       channel = as.integer(channel),
       node = .dwf_constants$analog_out$node_code[[node]]
+    )
+    supported_functions <- .ConvertMaskToNames(
+      function_mask,
+      .dwf_constants$analog_out$function_code
     )
     if (!checkmate::testChoice(func, supported_functions)) {
       stop_msg <-

@@ -25,11 +25,13 @@ test_that("Analog Out: control and carrier configuration", {
     .QueryAnalogOutChannelCountC = function(handle) {
       return(2L)
     },
-    .QueryAnalogOutChannelNodesC = function(handle, channel) {
-      return(c("carrier", "fm", "am"))
+    .QueryAnalogOutNodeMaskC = function(handle, channel) {
+      # carrier, fm, am
+      return(7L)
     },
-    .QueryAnalogOutNodeFunctionTypesC = function(handle, channel, node) {
-      return(c("dc", "sine", "square", "custom"))
+    .QueryAnalogOutNodeFunctionMaskC = function(handle, channel, node) {
+      # dc, sine, square, custom
+      return(1073741831L)
     },
     .QueryAnalogOutNodeFrequencyRangeC = function(handle, channel, node) {
       return(c(1e-06, 1e+08))
@@ -49,8 +51,9 @@ test_that("Analog Out: control and carrier configuration", {
     .QueryAnalogOutNodeSampleCountRangeC = function(handle, channel, node) {
       return(c(1L, 4096L))
     },
-    .QueryAnalogOutIdleModesC = function(handle, channel) {
-      return(c("offset", "initial", "hold"))
+    .QueryAnalogOutIdleMaskC = function(handle, channel) {
+      # offset, initial, hold
+      return(14L)
     },
 
     .AnalogOutResetC = function(handle, channel) {
@@ -222,14 +225,14 @@ test_that("Analog Out: control and carrier configuration", {
   )
 
   expect_error(
-    .ConfigureAnalogOut(device, channel = 0L, action_code = "invalid_action"),
+    .ConfigureAnalogOut(device, channel = 0L, action = "invalid_action"),
     'action' # "Assertion on 'action' failed"
   )
 
 
-  #.. .SetAnalogOutNodeMode(), EnableCarrier(), DisableCarrier .................
+  #.. EnableAnalogOutCarrier(), DisableAnalogOutCarrier() ......................
 
-  expect_null(EnableCarrier(device, channel = 0L))
+  expect_null(EnableAnalogOutCarrier(device, channel = 0L))
   expect_identical(
     mock_state$last_call,
     list(
@@ -241,7 +244,7 @@ test_that("Analog Out: control and carrier configuration", {
     )
   )
 
-  expect_null(DisableCarrier(device, channel = 0L))
+  expect_null(DisableAnalogOutCarrier(device, channel = 0L))
   expect_identical(
     mock_state$last_call,
     list(
@@ -252,6 +255,8 @@ test_that("Analog Out: control and carrier configuration", {
       mode = 0L
     )
   )
+
+  #.. .SetAnalogOutNodeMode() ..................................................
 
   expect_error(
     .SetAnalogOutNodeMode(
@@ -264,9 +269,9 @@ test_that("Analog Out: control and carrier configuration", {
   )
 
 
-  #.. SetCarrierFunction() .....................................................
+  #.. SetAnalogOutCarrierFunction() ............................................
 
-  expect_null(SetCarrierFunction(device, channel = 1L, func = "sine"))
+  expect_null(SetAnalogOutCarrierFunction(device, channel = 1L, func = "sine"))
   expect_identical(
     mock_state$last_call,
     list(
@@ -278,14 +283,16 @@ test_that("Analog Out: control and carrier configuration", {
     )
   )
   expect_error(
-    SetCarrierFunction(device, channel = 1L, func = "triangle"),
+    SetAnalogOutCarrierFunction(device, channel = 1L, func = "triangle"),
     "Function 'triangle' is not supported"
   )
 
 
-  #.. .SetAnalogOutValue(), SetCarrier*() ......................................
+  #.. .SetAnalogOutValue(), SetAnalogOutCarrier*() .............................
 
-  expect_null(SetCarrierFrequency(device, channel = 1L, frequency = 1000))
+  expect_null(
+    SetAnalogOutCarrierFrequency(device, channel = 1L, frequency = 1000)
+  )
   expect_identical(
     mock_state$last_call,
     list(
@@ -297,11 +304,11 @@ test_that("Analog Out: control and carrier configuration", {
     )
   )
   expect_error(
-    SetCarrierFrequency(device, channel = 1L, frequency = 1e10),
+    SetAnalogOutCarrierFrequency(device, channel = 1L, frequency = 1e10),
     "out of supported range"
   )
 
-  expect_null(SetCarrierAmplitude(device, channel = 1L, amplitude = 2))
+  expect_null(SetAnalogOutCarrierAmplitude(device, channel = 1L, amplitude = 2))
   expect_identical(
     mock_state$last_call,
     list(
@@ -313,11 +320,11 @@ test_that("Analog Out: control and carrier configuration", {
     )
   )
   expect_error(
-    SetCarrierAmplitude(device, channel = 1L, amplitude = 99),
+    SetAnalogOutCarrierAmplitude(device, channel = 1L, amplitude = 99),
     "out of supported range"
   )
 
-  expect_null(SetCarrierOffset(device, channel = 1L, offset = -1))
+  expect_null(SetAnalogOutCarrierOffset(device, channel = 1L, offset = -1))
   expect_identical(
     mock_state$last_call,
     list(
@@ -329,11 +336,11 @@ test_that("Analog Out: control and carrier configuration", {
     )
   )
   expect_error(
-    SetCarrierOffset(device, channel = 1L, offset = 99),
+    SetAnalogOutCarrierOffset(device, channel = 1L, offset = 99),
     "out of supported range"
   )
 
-  expect_null(SetCarrierSymmetry(device, channel = 1L, symmetry = 25))
+  expect_null(SetAnalogOutCarrierSymmetry(device, channel = 1L, symmetry = 25))
   expect_identical(
     mock_state$last_call,
     list(
@@ -345,11 +352,11 @@ test_that("Analog Out: control and carrier configuration", {
     )
   )
   expect_error(
-    SetCarrierSymmetry(device, channel = 1L, symmetry = 999),
+    SetAnalogOutCarrierSymmetry(device, channel = 1L, symmetry = 999),
     "out of supported range"
   )
 
-  expect_null(SetCarrierPhase(device, channel = 1L, phase = 90))
+  expect_null(SetAnalogOutCarrierPhase(device, channel = 1L, phase = 90))
   expect_identical(
     mock_state$last_call,
     list(
@@ -361,7 +368,7 @@ test_that("Analog Out: control and carrier configuration", {
     )
   )
   expect_error(
-    SetCarrierPhase(device, channel = 1L, phase = 999),
+    SetAnalogOutCarrierPhase(device, channel = 1L, phase = 999),
     "out of supported range"
   )
 
@@ -377,10 +384,10 @@ test_that("Analog Out: control and carrier configuration", {
   )
 
 
-  #.. SetCarrier() .............................................................
+  #.. SetAnalogOutCarrier() ....................................................
 
   expect_null(
-    SetCarrier(
+    SetAnalogOutCarrier(
       device,
       channel = 1L,
       func = "sine",
@@ -439,7 +446,9 @@ test_that("Analog Out: control and carrier configuration", {
     )
   )
 
-  expect_null(SetCarrier(device, channel = 1L, func = "square", amplitude = 3))
+  expect_null(
+    SetAnalogOutCarrier(device, channel = 1L, func = "square", amplitude = 3)
+  )
   expect_identical(
     tail(mock_state$calls, 2L),
     list(
@@ -460,7 +469,7 @@ test_that("Analog Out: control and carrier configuration", {
     )
   )
 
-  expect_null(SetCarrier(device, channel = 1L, phase = 45))
+  expect_null(SetAnalogOutCarrier(device, channel = 1L, phase = 45))
   expect_identical(
     mock_state$last_call,
     list(
@@ -472,9 +481,11 @@ test_that("Analog Out: control and carrier configuration", {
     )
   )
 
-  #.. SetCarrierData() .........................................................
+  #.. SetAnalogOutCarrierData() ................................................
 
-  expect_null(SetCarrierData(device, channel = 1L, data = c(-0.5, 0.5, -0.5)))
+  expect_null(
+    SetAnalogOutCarrierData(device, channel = 1L, data = c(-0.5, 0.5, -0.5))
+  )
   expect_identical(
     mock_state$last_call,
     list(
@@ -486,11 +497,11 @@ test_that("Analog Out: control and carrier configuration", {
     )
   )
   expect_error(
-    SetCarrierData(device, channel = 1L, data = rep(0, 9999L)),
+    SetAnalogOutCarrierData(device, channel = 1L, data = rep(0, 9999L)),
     "out of supported range"
   )
   expect_error(
-    SetCarrierData(device, channel = 1L, data = c(-0.5, 1.1, -0.3)),
+    SetAnalogOutCarrierData(device, channel = 1L, data = c(-0.5, 1.1, -0.3)),
     'data' # "Assertion on 'data' failed"
   )
 
@@ -583,6 +594,22 @@ test_that("Analog Out: control and carrier configuration", {
       channel = 0L
     )
   )
+
+
+  #.. Analog Out validation bypass .............................................
+
+  the_env$devices <- list()
+  expect_error(
+    ApplyAnalogOutSettings(device, channel = 1L),
+    "session that does not exist"
+  )
+  expect_null(
+    ApplyAnalogOutSettings(
+      device,
+      channel = 1L,
+      .validate_analog_out = FALSE
+    )
+  )
 })
 
 
@@ -604,8 +631,9 @@ test_that("Analog Out: configuration getters", {
     .QueryAnalogOutChannelCountC = function(handle) {
       return(2L)
     },
-    .QueryAnalogOutChannelNodesC = function(handle, channel) {
-      return(c("carrier", "fm", "am"))
+    .QueryAnalogOutNodeMaskC = function(handle, channel) {
+      # carrier, fm, am
+      return(7L)
     },
 
     .AnalogOutStatusC = function(handle, channel) {
@@ -704,9 +732,9 @@ test_that("Analog Out: configuration getters", {
   )
 
 
-  #.. IsCarrierEnabled() .......................................................
+  #.. IsAnalogOutCarrierEnabled() ..............................................
 
-  expect_true(IsCarrierEnabled(device, channel = 1L))
+  expect_true(IsAnalogOutCarrierEnabled(device, channel = 1L))
   expect_identical(
     mock_state$last_call,
     list(
@@ -718,14 +746,14 @@ test_that("Analog Out: configuration getters", {
   )
 
   mock_state$carrier_mode <- 0L
-  expect_false(IsCarrierEnabled(device, channel = 1L))
+  expect_false(IsAnalogOutCarrierEnabled(device, channel = 1L))
   mock_state$carrier_mode <- 1L
 
 
-  #.. GetCarrierFunction() .....................................................
+  #.. GetAnalogOutCarrierFunction() ............................................
 
   expect_identical(
-    GetCarrierFunction(device, channel = 1L),
+    GetAnalogOutCarrierFunction(device, channel = 1L),
     "sine"
   )
   expect_identical(
@@ -739,10 +767,10 @@ test_that("Analog Out: configuration getters", {
   )
 
 
-  #.. GetCarrier*() ............................................................
+  #.. GetAnalogOutCarrier*() ...................................................
 
   expect_identical(
-    GetCarrierFrequency(device, channel = 1L),
+    GetAnalogOutCarrierFrequency(device, channel = 1L),
     1000
   )
   expect_identical(
@@ -756,7 +784,7 @@ test_that("Analog Out: configuration getters", {
   )
 
   expect_identical(
-    GetCarrierAmplitude(device, channel = 1L),
+    GetAnalogOutCarrierAmplitude(device, channel = 1L),
     2
   )
   expect_identical(
@@ -770,7 +798,7 @@ test_that("Analog Out: configuration getters", {
   )
 
   expect_identical(
-    GetCarrierOffset(device, channel = 1L),
+    GetAnalogOutCarrierOffset(device, channel = 1L),
     -1
   )
   expect_identical(
@@ -784,7 +812,7 @@ test_that("Analog Out: configuration getters", {
   )
 
   expect_identical(
-    GetCarrierSymmetry(device, channel = 1L),
+    GetAnalogOutCarrierSymmetry(device, channel = 1L),
     25
   )
   expect_identical(
@@ -798,7 +826,7 @@ test_that("Analog Out: configuration getters", {
   )
 
   expect_identical(
-    GetCarrierPhase(device, channel = 1L),
+    GetAnalogOutCarrierPhase(device, channel = 1L),
     90
   )
   expect_identical(
@@ -812,10 +840,10 @@ test_that("Analog Out: configuration getters", {
   )
 
 
-  #.. GetCarrierSettings() .....................................................
+  #.. GetAnalogOutCarrierSettings() ............................................
 
   expect_identical(
-    GetCarrierSettings(device, channel = 1L),
+    GetAnalogOutCarrierSettings(device, channel = 1L),
     list(
       enabled = TRUE,
       func = "sine",
@@ -1638,9 +1666,6 @@ test_that("Analog Out: native-error propagation", {
     .QueryAnalogOutChannelCountC = function(handle) {
       return(2L)
     },
-    .QueryAnalogOutChannelNodesC = function(handle, channel) {
-      return(c("carrier"))
-    },
     .QueryAnalogOutNodeFrequencyRangeC = function(handle, channel, node) {
       return(c(1, 1e6))
     },
@@ -1721,12 +1746,12 @@ test_that("Analog Out: native-error propagation", {
   )
 
   expect_error(
-    SetCarrierFrequency(device, channel = 0L, frequency = 1000),
+    SetAnalogOutCarrierFrequency(device, channel = 0L, frequency = 1000),
     "DWF frequency error"
   )
 
   expect_error(
-    GetCarrierFrequency(device, channel = 0L),
+    GetAnalogOutCarrierFrequency(device, channel = 0L),
     "DWF frequency query error"
   )
 
@@ -1861,7 +1886,7 @@ test_that("Hardware: Analog Out control and carrier configuration", {
   channel <- 0L
   on.exit({
     try(StopAnalogOut(device, channel), silent = TRUE)
-    try(DisableCarrier(device, channel), silent = TRUE)
+    try(DisableAnalogOutCarrier(device, channel), silent = TRUE)
     try(ApplyAnalogOutSettings(device, channel), silent = TRUE)
     try(ResetAnalogOut(device, channel), silent = TRUE)
     try(CloseDevice(device), silent = TRUE)
@@ -1919,19 +1944,19 @@ test_that("Hardware: Analog Out control and carrier configuration", {
 
   #.. Enable/disable carrier ...................................................
 
-  expect_null(DisableCarrier(device, channel))
+  expect_null(DisableAnalogOutCarrier(device, channel))
   ApplyAnalogOutSettings(device, channel)
-  expect_false(IsCarrierEnabled(device, channel))
+  expect_false(IsAnalogOutCarrierEnabled(device, channel))
 
-  EnableCarrier(device, channel)
+  EnableAnalogOutCarrier(device, channel)
   ApplyAnalogOutSettings(device, channel)
-  expect_true(IsCarrierEnabled(device, channel))
+  expect_true(IsAnalogOutCarrierEnabled(device, channel))
 
 
   #.. Set/get carrier settings .................................................
 
   expect_null(
-    SetCarrier(
+    SetAnalogOutCarrier(
       device,
       channel,
       func = func,
@@ -1945,15 +1970,15 @@ test_that("Hardware: Analog Out control and carrier configuration", {
   expect_null(ApplyAnalogOutSettings(device, channel))
 
   expect_identical(
-    GetCarrierFunction(device, channel),
+    GetAnalogOutCarrierFunction(device, channel),
     func
   )
 
-  actual_frequency <- GetCarrierFrequency(device, channel)
-  actual_amplitude <- GetCarrierAmplitude(device, channel)
-  actual_offset <- GetCarrierOffset(device, channel)
-  actual_symmetry <- GetCarrierSymmetry(device, channel)
-  actual_phase <- GetCarrierPhase(device, channel)
+  actual_frequency <- GetAnalogOutCarrierFrequency(device, channel)
+  actual_amplitude <- GetAnalogOutCarrierAmplitude(device, channel)
+  actual_offset <- GetAnalogOutCarrierOffset(device, channel)
+  actual_symmetry <- GetAnalogOutCarrierSymmetry(device, channel)
+  actual_phase <- GetAnalogOutCarrierPhase(device, channel)
   expect_true(all(is.finite(c(
     actual_frequency,
     actual_amplitude,
@@ -1973,9 +1998,9 @@ test_that("Hardware: Analog Out control and carrier configuration", {
     expect_equal(actual_phase, phase, tolerance = 1e-3)
   }
 
-  settings <- GetCarrierSettings(device, channel)
-  expect_identical(settings$enabled, IsCarrierEnabled(device, channel))
-  expect_identical(settings$func, GetCarrierFunction(device, channel))
+  settings <- GetAnalogOutCarrierSettings(device, channel)
+  expect_identical(settings$enabled, IsAnalogOutCarrierEnabled(device, channel))
+  expect_identical(settings$func, GetAnalogOutCarrierFunction(device, channel))
   expect_equal(settings$frequency, actual_frequency)
   expect_equal(settings$amplitude, actual_amplitude)
   expect_equal(settings$offset, actual_offset)

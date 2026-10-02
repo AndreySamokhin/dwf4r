@@ -70,14 +70,18 @@ GetDeviceTriggerSlopes <- function(device, .validate_device = TRUE) {
 #'   to this pulse.
 #'
 #' @template arg_device
+#' @template arg_validate_device
 #'
 #' @return
 #'   Invisibly returns \code{NULL}.
 #'
 #' @export
 #==============================================================================#
-TriggerDevice <- function(device) {
-  .AssertDevice(device)
+TriggerDevice <- function(device, .validate_device = TRUE) {
+  checkmate::assertFlag(.validate_device)
+  if (.validate_device) {
+    .AssertDevice(device)
+  }
   .DeviceTriggerPcC(device$device_handle)
   return(invisible(NULL))
 }
