@@ -1,5 +1,14 @@
 # dwf4r
 
+## dwf4r 0.4.0
+
+- Added high-level Analog Out functions for configuring standard and custom
+  waveforms, including waveforms defined by time-voltage points.
+- Added high-level Digital Out functions for configuring pulse and custom
+  waveforms, including waveforms defined by time-state points.
+- Expanded the Analog Out and Digital Out vignettes with high-level waveform
+  generation examples.
+  
 ## dwf4r 0.3.0
 
 - Renamed Analog Out carrier functions for consistency with the rest of the

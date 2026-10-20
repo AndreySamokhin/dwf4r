@@ -1,7 +1,7 @@
 ---
 title: "Basic Digital Out Functionality"
 author: "Andrey Samokhin"
-date: "2026-09-22"
+date: "2026-10-20"
 output:
   rmarkdown::html_vignette:
     css: style.css
@@ -72,9 +72,12 @@ print(device$info)
 ### Oscilloscope
 
 The waveforms shown in this vignette were measured using a Rigol DHO804
-oscilloscope. Up to four Digital Out channels were connected to four
-oscilloscope inputs, and the Analog Discovery ground terminal was connected to
-the corresponding oscilloscope grounds.
+oscilloscope. For most examples, up to four Digital Out channels were connected
+directly to the oscilloscope inputs. To demonstrate the high-impedance (`Hi-Z`)
+state, a simple circuit containing two 10 kΩ resistors was used to produce an
+intermediate voltage when the output was in the `Hi-Z` state. This circuit is
+described in the corresponding section below. The Analog Discovery ground
+terminal was connected to the oscilloscope grounds in all experiments.
 
 For each example, the waveform was generated using the displayed R code, the
 oscilloscope settings were adjusted to show the relevant signal properties, and
@@ -130,7 +133,7 @@ D = \frac{ N_{\mathrm{high}} }{ N_{\mathrm{low}} + N_{\mathrm{high}} }.
 $$
 
 The following example uses these settings to generate a continuous 1 kHz pulse
-waveform with a 50% duty cycle on the first Digital Out channel.
+waveform with a 50% duty cycle on Digital Out channel 0.
 
 ```{r generate_pulse, eval = FALSE}
 ResetDigitalOut(device)
@@ -156,10 +159,10 @@ StartDigitalOut(device)
 ```
 
 The example begins with `ResetDigitalOut()` to restore the Digital Out
-instrument to its SDK defaults and provide a reproducible starting point. The
-first channel is then enabled and configured for push-pull pulse generation.
-After the timing parameters are set, `StartDigitalOut()` starts the configured
-Digital Out instrument.
+instrument to its SDK defaults and provide a reproducible starting point.
+Channel 0 is then enabled and configured for push-pull pulse generation. After
+the timing parameters are set, `StartDigitalOut()` starts the configured Digital
+Out instrument.
 
 In this example, one pulse period consists of ten counter steps. The calculated
 divider makes these ten steps correspond to a frequency of 1 kHz. Five steps are
@@ -580,10 +583,10 @@ states. The available idle modes depend on the selected device and channel.
 The `"initial"` mode uses the configured initial output value. The `"low"` and
 `"high"` modes instead force a corresponding logical level while the instrument
 is idle. The `"three_state"` mode places the output in a high-impedance state
-and is not demonstrated here.
+and is not demonstrated in this section.
 
-The following code sets the first channel to the `"high"` idle mode and starts
-the same four-cycle custom-pattern sequence again (Figure 8).
+The following code sets channel 0 to the `"high"` idle mode and starts the same
+four-cycle custom-pattern sequence again (Figure 8).
 
 ```{r use_high_idle_output, eval = FALSE}
 SetDigitalOutIdle(device, channel = 0L, idle = "high")
@@ -866,6 +869,131 @@ second pair is also centered with the 0.5 kHz pulse on channel 0.
 
 knitr::include_graphics(
   "figures/digital-out-basics/shifted-waveforms.png"
+)
+```
+
+## Generate waveforms using high-level functions
+
+For common waveform-generation tasks, `dwf4r` provides high-level helpers that
+simplify the configuration of the built-in `"pulse"` and `"custom"`
+signal-generation functions available in the WaveForms SDK:
+
+* `ConfigureDigitalOutPulse()`
+* `ConfigureDigitalOutCustom()`
+* `ConfigureDigitalOutFromPoints()`
+
+These functions configure waveform parameters and enable the selected Digital
+Out channels, but do not start generation. The custom-waveform helpers also
+configure the electrical output mode, while more specialized tasks, such as
+triggering and instrument timing, may still require lower-level functions.
+
+The following example generates three signals: a constant `HIGH` level on
+`DIO0`, a 500 Hz three-state waveform on `DIO1`, and a 1 kHz pulse waveform on
+`DIO2`. The three-state waveform alternates between `LOW`, high-impedance
+(`Hi-Z`), `HIGH`, and `Hi-Z` intervals, followed by a longer `LOW` interval. The
+pulse waveform has a duty cycle of 25% and a phase shift of 180 degrees, so its
+first `HIGH` interval coincides with the `HIGH` interval of the three-state
+waveform.
+
+To distinguish the `Hi-Z` state from actively driven `LOW` and `HIGH` states, an
+additional circuit containing two 10 kΩ resistors is used (Figure 11). `DIO0`
+provides a constant `HIGH` level of approximately 3.3 V, while the voltage
+divider establishes approximately 1.65 V at the `DIO1` output when it is in the
+`Hi-Z` state. Oscilloscope `CH1` measures this voltage, while `CH2` measures the
+pulse waveform directly. The oscilloscope grounds are connected to the Analog
+Discovery 2 ground.
+
+```{r}
+#| label: fig_three_state_circuit
+#| echo: false
+#| fig.cap: >
+#|   Figure 11. Circuit for observing the high-impedance state of a Digital Out
+#|   channel. <code>DIO0</code> provides a constant <code>HIGH</code> level,
+#|   <code>DIO1</code> generates a three-state waveform, and <code>DIO2</code>
+#|   generates an ordinary pulse waveform.
+
+knitr::include_graphics(
+  "figures/digital-out-basics/three-state-circuit.png"
+)
+```
+
+To demonstrate a complete workflow, the example stops generation and resets the
+Digital Out instrument before configuring all three signals using high-level
+functions. All three high-level functions automatically configure the electrical
+output modes, so separate calls to `SetDigitalOutOutput()` are not needed.
+
+```{r configure_high_level_digital_out, eval = FALSE}
+StopDigitalOut(device)
+ResetDigitalOut(device)
+
+# DIO0: constant HIGH level (approximately 3.3 V).
+ConfigureDigitalOutCustom(
+  device,
+  channel = 0L,
+  pattern = 1,
+  frequency = 1000
+)
+
+# DIO1: three-state waveform with a nominal period of 2000 us (500 Hz).
+channel_states <- c("l", "z", "h", "z", "l", "l", "l", "l")
+three_state_result <- ConfigureDigitalOutFromPoints(
+  device,
+  channel = 1L,
+  time_us = seq(0, 2000, length.out = length(channel_states) + 1L),
+  states = channel_states,
+  output = "three_state"
+)
+
+# DIO2: pulse waveform with twice the actual DIO1 frequency.
+ConfigureDigitalOutPulse(
+  device,
+  channel = 2L,
+  frequency = 2 * three_state_result$frequency$actual,
+  duty_cycle = 25,
+  phase = 180
+)
+
+StartDigitalOut(device)
+
+print(three_state_result$frequency$actual)
+
+#> 499.5205
+```
+
+`ConfigureDigitalOutCustom()` generates a constant `HIGH` level because the
+custom pattern consists of a single element with the value `1`, which is
+repeated continuously. For the three-state waveform,
+`ConfigureDigitalOutFromPoints()` converts the specified time intervals and
+logical states into an equally spaced custom pattern. The `output =
+"three_state"` argument automatically selects the three-state electrical output
+mode and the corresponding pattern encoding.
+
+Because waveform timing is determined by integer clock dividers, the actual
+repetition frequency may differ slightly from the requested value. The
+`frequency$actual` element of the returned list provides the calculated
+frequency after quantization, which is approximately 499.52 Hz in this example.
+This value is used to configure the pulse waveform on `DIO2` with twice the
+repetition frequency of `DIO1`.
+
+Figure 12 shows the resulting oscilloscope traces. The three-state waveform has
+three observable voltage levels: approximately 0 V for `LOW`, 3.3 V for `HIGH`,
+and 1.65 V for `Hi-Z`. During one period of this waveform, two pulse periods are
+generated on `DIO2`. The first `HIGH` intervals coincide, while the second pulse
+occurs during the extended `LOW` interval of `DIO1`.
+
+```{r}
+#| label: fig_high_level_digital_out_waveforms
+#| echo: false
+#| out.width: "100%"
+#| fig.cap: >
+#|   Figure 12. Oscilloscope traces of an approximately 500 Hz three-state waveform on
+#|   <code>DIO1</code> and an approximately 1 kHz pulse waveform on
+#|   <code>DIO2</code>. The voltage divider produces an intermediate voltage of
+#|   approximately 1.65 V during the high-impedance intervals of
+#|   <code>DIO1</code>.
+
+knitr::include_graphics(
+  "figures/digital-out-basics/three-state-waveforms.png"
 )
 ```
 

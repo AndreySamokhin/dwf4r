@@ -1,7 +1,7 @@
 ---
 title: "Basic Analog Out Functionality"
 author: "Andrey Samokhin"
-date: "2026-08-26"
+date: "2026-10-20"
 output:
   rmarkdown::html_vignette:
     css: style.css
@@ -83,8 +83,8 @@ evaluated during vignette rendering because it requires connected hardware.
 
 ## Generate a sine waveform
 
-The following example generates a continuous 1 kHz sine wave on the first Analog
-Out channel.
+The following example generates a continuous 1 kHz sine wave on Analog Out
+channel 0.
 
 ```{r generate_sine, eval = FALSE}
 ResetAnalogOut(device, channel = 0L)
@@ -173,8 +173,8 @@ setter functions:
 ## Inspect and stop waveform generation
 
 The current state of an Analog Out channel can be retrieved using
-`GetAnalogOutStatus()`. At this point, the first channel is generating the
-modified sine wave and therefore has the `"running"` state.
+`GetAnalogOutStatus()`. At this point, channel 0 is generating the modified sine
+wave and is therefore in the `"running"` state.
 
 ```{r get_analog_out_status, eval = FALSE}
 GetAnalogOutStatus(device, channel = 0L)
@@ -787,6 +787,87 @@ GetAnalogOutMaster(device, channel = 0L)
 GetAnalogOutMaster(device, channel = 1L)
 
 #> [1] 0
+```
+
+## Generate waveforms using high-level functions
+
+For common waveform-generation tasks, `dwf4r` provides high-level wrappers
+around several built-in waveform functions available in the WaveForms SDK:
+
+* `ConfigureAnalogOutConstantVoltage()`
+* `ConfigureAnalogOutSine()`
+* `ConfigureAnalogOutSquare()`
+* `ConfigureAnalogOutTriangle()`
+* `ConfigureAnalogOutRampUp()`
+* `ConfigureAnalogOutRampDown()`
+
+More sophisticated waveforms can be generated using the SDK's `"custom"`
+waveform function through two additional high-level helpers:
+
+* `ConfigureAnalogOutCustom()`
+* `ConfigureAnalogOutFromPoints()`
+
+All these functions configure the carrier parameters and enable the carrier
+node, but do not start generation. More specialized tasks, such as configuring
+triggering, timing, or channel synchronization, may still require lower-level
+functions.
+
+The following example generates a 1 kHz bipolar trapezoidal waveform on channel
+0 and a 2 kHz triangle waveform on channel 1. Both signals range from -1 V to 1
+V. The channels are synchronized, with channel 0 acting as the master. To
+demonstrate a complete workflow, the example stops generation, resets both
+channels, and uses lower-level functions to establish synchronization and start
+generation.
+
+```{r configure_high_level_waveforms, eval = FALSE}
+StopAnalogOut(device, channel = 0L)
+ResetAnalogOut(device, channel = 0L)
+ResetAnalogOut(device, channel = 1L)
+
+SetAnalogOutMaster(device, channel = 1L, master_channel = 0L)
+
+# A period of 1000 us corresponds to a frequency of 1 kHz.
+ConfigureAnalogOutFromPoints(
+  device,
+  channel = 0L,
+  time_us = c(0, 50, 100, 150, 200, 250, 300, 350, 1000),
+  voltages = c(0, 1, 1, 0, 0, -1, -1, 0, 0)
+)
+
+ConfigureAnalogOutTriangle(
+  device,
+  channel = 1L,
+  frequency = 2000,
+  amplitude = 1
+)
+
+ApplyAnalogOutSettings(device, channel = 1L)
+StartAnalogOut(device, channel = 0L)
+```
+
+`ConfigureAnalogOutFromPoints()` creates a periodic waveform by linearly
+interpolating between the specified time-voltage points. The last time point
+defines the waveform period. The triangle waveform is configured using a single
+high-level function call. As in the previous example, the slave configuration is
+applied before starting the master channel.
+
+Figure 12 shows the bipolar trapezoidal waveform, with positive and negative
+plateaus connected by linear transitions, alongside the triangle waveform. As
+expected from the configured frequencies, two complete triangle periods occur
+during each trapezoidal period.
+
+```{r}
+#| label: fig_high_level_analog_out_waveforms
+#| echo: false
+#| out.width: "100%"
+#| fig.cap: >
+#|   Figure 12. Oscilloscope traces of synchronized 1 kHz bipolar trapezoidal
+#|   and 2 kHz triangle waveforms generated on Analog Out channels 0 and 1,
+#|   respectively. Both signals range from -1 V to 1 V.
+
+knitr::include_graphics(
+  "figures/analog-out-basics/high-level-waveforms.png"
+)
 ```
 
 ## Stop generation and close the device
